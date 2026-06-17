@@ -2,305 +2,268 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="生活管家">
     <meta name="theme-color" content="#0a0a14">
-    <link rel="manifest" href="data:application/json,{}">
-    <title>🏠 生活管家</title>
+    <title>🚀 万能生活</title>
     <style>
-        :root{--bg:#0a0a14;--card:rgba(255,255,255,0.03);--accent:#6366f1;--gold:#f59e0b;--green:#10b981;--red:#ef4444;--blue:#3b82f6;--text:#e8e8f0;--text2:rgba(255,255,255,0.4)}
+        :root{--bg:#06060e;--card:rgba(255,255,255,0.025);--accent:#6366f1;--g:#10b981;--r:#ef4444;--y:#f59e0b;--b:#3b82f6;--t:#e8e8f0;--t2:rgba(255,255,255,0.35)}
         *{margin:0;padding:0;box-sizing:border-box}
-        body{
-            font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
-            background:var(--bg);color:var(--text);
-            min-height:100vh;max-width:480px;margin:0 auto;
-            -webkit-tap-highlight-color:transparent;
-            padding-bottom:80px;overflow-x:hidden;
-        }
-        /* Header */
-        .header{padding:20px 16px 0;display:flex;align-items:center;justify-content:space-between}
-        .header h1{font-size:20px;font-weight:800;letter-spacing:1px}
-        .header .date{font-size:12px;color:var(--text2)}
-        /* Weather */
-        .weather-card{
-            margin:16px;padding:20px;background:linear-gradient(135deg,#1e1b4b,#312e81);
-            border-radius:20px;display:flex;align-items:center;gap:16px;
-        }
-        .weather-card .temp{font-size:48px;font-weight:200;line-height:1}
-        .weather-card .info{flex:1}
-        .weather-card .info .city{font-size:14px;opacity:0.8}
-        .weather-card .info .desc{font-size:13px;opacity:0.6;margin-top:2px}
-        .weather-card .outfit{font-size:12px;background:rgba(255,255,255,0.1);padding:6px 12px;border-radius:20px;margin-top:6px;display:inline-block}
-        .weather-card .icon{font-size:52px}
-        /* Quick Grid */
-        .quick-grid{
-            display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px;margin-bottom:12px;
-        }
-        .quick-card{
-            background:var(--card);border:1px solid rgba(255,255,255,0.05);
-            border-radius:16px;padding:18px;cursor:pointer;transition:all 0.2s;
-            position:relative;overflow:hidden;
-        }
-        .quick-card:active{transform:scale(0.97)}
-        .quick-card .label{font-size:12px;color:var(--text2);margin-bottom:4px}
-        .quick-card .value{font-size:28px;font-weight:800}
-        .quick-card .extra{font-size:11px;color:var(--text2);margin-top:4px}
-        /* Bottom Nav */
-        .nav{
-            position:fixed;bottom:0;left:50%;transform:translateX(-50%);
-            width:100%;max-width:480px;background:rgba(10,10,20,0.95);
-            border-top:1px solid rgba(255,255,255,0.05);display:flex;
-            padding:8px 0 env(safe-area-inset-bottom,8px);
-            backdrop-filter:blur(20px);z-index:50;
-        }
-        .nav-item{
-            flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
-            padding:8px 0;cursor:pointer;font-size:10px;color:var(--text2);transition:all 0.2s;
-            border:none;background:none;
-        }
-        .nav-item.active{color:var(--accent)}
-        .nav-item .nav-icon{font-size:22px}
-        /* Panels */
-        .panel{display:none;padding:16px}
-        .panel.active{display:block;animation:fadeIn 0.3s ease}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-        /* Expense */
-        .expense-form{display:flex;gap:8px;margin-bottom:16px}
-        .expense-form input{
-            flex:1;padding:12px;background:var(--card);border:1px solid rgba(255,255,255,0.08);
-            color:var(--text);border-radius:12px;font-size:14px;outline:none;font-family:inherit;
-        }
-        .expense-form input:focus{border-color:var(--accent)}
-        .expense-form button{
-            padding:12px 18px;background:var(--accent);color:#fff;border:none;border-radius:12px;
-            font-weight:700;cursor:pointer;font-size:14px;
-        }
-        .expense-item{
-            display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);
-            border-radius:12px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.04);
-        }
-        .expense-item .cat{font-size:24px}
-        .expense-item .detail{flex:1}
-        .expense-item .detail .n{font-size:14px}
-        .expense-item .detail .d{font-size:11px;color:var(--text2)}
-        .expense-item .amount{font-weight:700}
-        .amount.in{color:var(--green)}.amount.out{color:var(--red)}
-        /* Water */
-        .water-track{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:20px 0}
-        .water-cup{
-            width:40px;height:50px;border-radius:8px;border:2px solid rgba(255,255,255,0.15);
-            cursor:pointer;transition:all 0.2s;
-        }
-        .water-cup.filled{background:var(--blue);border-color:var(--blue)}
-        .water-count{text-align:center;font-size:24px;font-weight:800;margin:12px 0}
-        /* Todo */
-        .todo-item{
-            display:flex;align-items:center;gap:10px;padding:14px;background:var(--card);
-            border-radius:12px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.04);
-        }
-        .todo-item .check{
-            width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);
-            cursor:pointer;flex-shrink:0;transition:all 0.2s;
-        }
-        .todo-item .check.done{background:var(--green);border-color:var(--green)}
-        .todo-item .check.done::after{content:'✓';display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;height:100%}
-        .todo-item .txt{flex:1;font-size:14px}
-        .todo-item.done .txt{text-decoration:line-through;color:var(--text2)}
-        .float-add{
-            position:fixed;bottom:100px;right:calc(50% - 210px);width:48px;height:48px;
-            background:var(--accent);border-radius:50%;color:#fff;font-size:24px;border:none;
-            cursor:pointer;box-shadow:0 4px 20px rgba(99,102,241,0.4);z-index:10;
-            display:flex;align-items:center;justify-content:center;
-        }
-        @media(max-width:480px){.float-add{right:16px}}
+        body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;max-width:500px;margin:0 auto;padding:0 0 100px;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+        /* top */
+        .top{padding:12px 14px 0;display:flex;justify-content:space-between;align-items:center}
+        .top .t1{font-size:18px;font-weight:800;letter-spacing:1px}
+        .top .t2{font-size:11px;color:var(--t2)}
+        /* search-like bar */
+        .search-bar{margin:10px 14px;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.05);border-radius:14px;display:flex;gap:8px;align-items:center;font-size:12px;color:var(--t2)}
+        .search-bar input{flex:1;background:none;border:none;color:var(--t);font-size:12px;outline:none;font-family:inherit}
+        .search-bar input::placeholder{color:rgba(255,255,255,0.2)}
+        /* category scroll */
+        .cat-scroll{padding:4px 14px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+        .cat-scroll::-webkit-scrollbar{display:none}
+        .cat-pill{padding:6px 14px;border-radius:20px;font-size:11px;white-space:nowrap;border:1px solid rgba(255,255,255,0.08);cursor:pointer;color:var(--t2);transition:all 0.2s;flex-shrink:0}
+        .cat-pill.on{background:var(--accent);border-color:var(--accent);color:#fff}
+        /* grid */
+        .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 14px}
+        .card{background:var(--card);border:1px solid rgba(255,255,255,0.04);border-radius:16px;padding:16px;cursor:pointer;transition:all 0.2s;position:relative}
+        .card:active{transform:scale(0.97)}
+        .card .icon{font-size:26px;margin-bottom:6px}
+        .card .title{font-size:13px;font-weight:700;margin-bottom:2px}
+        .card .sub{font-size:10px;color:var(--t2);line-height:1.4}
+        .card .badge{position:absolute;top:10px;right:10px;font-size:9px;padding:2px 8px;border-radius:10px;font-weight:600}
+        .badge.hot{background:rgba(239,68,68,0.15);color:#f87171}
+        .badge.new{background:rgba(16,185,129,0.15);color:#34d399}
+        .badge.app{background:rgba(99,102,241,0.12);color:#818cf8}
+        /* big row */
+        .big-row{padding:0 14px;margin-bottom:10px}
+        .big-row .section-title{font-size:12px;color:var(--t2);letter-spacing:2px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+        .big-card{background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(139,92,246,0.04));border:1px solid rgba(99,102,241,0.1);border-radius:16px;padding:18px;display:flex;align-items:center;gap:14px;margin-bottom:8px;cursor:pointer;transition:all 0.2s}
+        .big-card:active{transform:scale(0.98)}
+        .big-card .big-icon{font-size:36px}
+        .big-card .info{flex:1}
+        .big-card .info h4{font-size:14px;margin-bottom:2px}
+        .big-card .info p{font-size:11px;color:var(--t2)}
+        .big-card .arrow{font-size:18px;color:var(--t2)}
+        /* bottom nav */
+        .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:rgba(6,6,14,0.95);border-top:1px solid rgba(255,255,255,0.04);display:flex;padding:6px 0 env(safe-area-inset-bottom,6px);z-index:50;backdrop-filter:blur(20px)}
+        .nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;background:none;border:none;color:var(--t2);font-size:10px;cursor:pointer;transition:all 0.2s}
+        .nav button.on{color:var(--accent)}
+        .nav button .ni{font-size:20px}
+        /* modal */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99;display:none;align-items:flex-end;justify-content:center}
+        .modal-overlay.show{display:flex}
+        .modal{background:#14141e;border-radius:20px 20px 0 0;width:100%;max-width:500px;padding:20px 16px 30px;max-height:70vh;overflow-y:auto}
+        .modal h3{font-size:16px;text-align:center;margin-bottom:16px}
+        .modal .close{position:absolute;right:16px;top:16px;background:none;border:none;color:var(--t2);font-size:20px;cursor:pointer}
     </style>
 </head>
 <body>
 
-<!-- Header -->
-<div class="header">
-    <div><h1>🏠 生活管家</h1><div class="date" id="todayDate"></div></div>
+<div class="top"><div><div class="t1">🚀 万能生活</div><div class="t2" id="todayDate"></div></div><div style="font-size:24px" onclick="toggleSearch()">🔍</div></div>
+
+<div class="search-bar" id="searchBar" style="display:none">
+    <span>🔍</span>
+    <input type="text" id="searchInput" placeholder="搜功能… 比如：周报、合同、喝水、挂号…" oninput="doSearch()">
 </div>
 
-<!-- Weather -->
-<div class="weather-card" id="weatherCard">
-    <div class="icon">☀️</div>
-    <div>
-        <div class="temp" id="wTemp">32°</div>
-        <div class="info"><div class="city">📍 广州</div><div class="desc" id="wDesc">晴，体感 35°</div></div>
-        <div class="outfit" id="wOutfit">👔 今天适合穿短袖，建议带伞</div>
-    </div>
-</div>
+<div class="cat-scroll" id="catScroll"></div>
+<div class="grid" id="grid"></div>
 
-<!-- Quick Stats -->
-<div class="quick-grid">
-    <div class="quick-card" onclick="switchPanel('expense')">
-        <div class="label">💸 今日支出</div>
-        <div class="value" style="color:var(--red)" id="todayExpense">¥0</div>
-        <div class="extra" id="monthExpense">本月 ¥0</div>
-    </div>
-    <div class="quick-card" onclick="switchPanel('water')">
-        <div class="label">💧 今日饮水</div>
-        <div class="value" style="color:var(--blue)" id="waterDisplay">0/8 杯</div>
-        <div class="extra">每杯 250ml</div>
-    </div>
-    <div class="quick-card" onclick="switchPanel('todo')">
-        <div class="label">📋 待办</div>
-        <div class="value" style="color:var(--accent)" id="todoCount">0 项</div>
-        <div class="extra" id="todoDone">已完成 0</div>
-    </div>
-    <div class="quick-card" onclick="showReport()">
-        <div class="label">📊 周报</div>
-        <div class="value" style="color:var(--gold)">一键</div>
-        <div class="extra">生成本周总结</div>
-    </div>
-</div>
+<div class="big-row" id="bigRow"></div>
 
-<!-- Panels -->
-<div class="panel" id="panel-home"></div>
-
-<div class="panel" id="panel-expense">
-    <h3 style="margin-bottom:12px">💸 记一笔</h3>
-    <div class="expense-form">
-        <input type="text" id="expNote" placeholder="买了什么…" maxlength="20">
-        <input type="number" id="expAmount" placeholder="金额" style="width:80px">
-        <button onclick="addExpense()">记</button>
-    </div>
-    <div id="expenseList"></div>
-</div>
-
-<div class="panel" id="panel-water">
-    <h3 style="margin-bottom:12px;text-align:center">💧 今日饮水打卡</h3>
-    <div class="water-count" id="waterCount">0 / 8 杯</div>
-    <div class="water-track" id="waterTrack"></div>
-    <p style="text-align:center;color:var(--text2);font-size:12px;margin-top:12px">点一下杯子记录喝水</p>
-</div>
-
-<div class="panel" id="panel-todo">
-    <h3 style="margin-bottom:12px">📋 今日待办</h3>
-    <div class="expense-form">
-        <input type="text" id="todoInput" placeholder="添加新任务…">
-        <button onclick="addTodo()">+</button>
-    </div>
-    <div id="todoList"></div>
-</div>
-
-<!-- Bottom Nav -->
 <nav class="nav">
-    <button class="nav-item active" data-panel="home" onclick="switchPanel('home')"><span class="nav-icon">🏠</span>首页</button>
-    <button class="nav-item" data-panel="expense" onclick="switchPanel('expense')"><span class="nav-icon">💸</span>记账</button>
-    <button class="nav-item" data-panel="water" onclick="switchPanel('water')"><span class="nav-icon">💧</span>喝水</button>
-    <button class="nav-item" data-panel="todo" onclick="switchPanel('todo')"><span class="nav-icon">📋</span>待办</button>
+    <button class="on" data-p="all" onclick="filter('all')"><span class="ni">🏠</span>全部</button>
+    <button data-p="work" onclick="filter('work')"><span class="ni">💼</span>工作</button>
+    <button data-p="money" onclick="filter('money')"><span class="ni">💰</span>钱</button>
+    <button data-p="life" onclick="filter('life')"><span class="ni">🏠</span>生活</button>
+    <button data-p="health" onclick="filter('health')"><span class="ni">🏥</span>健康</button>
 </nav>
 
 <script>
-// ── Data ──
-const today=new Date().toISOString().split('T')[0];
-let expenses=JSON.parse(localStorage.getItem('lifeExpenses')||'[]');
-let waterCups=parseInt(localStorage.getItem('lifeWater_'+today)||'0');
-let todos=JSON.parse(localStorage.getItem('lifeTodos')||'[]');
+// ── ALL FEATURES ──
+const FEATURES = [
+    // 💼 工作
+    {id:'report',icon:'📝',title:'AI 周报生成',sub:'一句话生成专业周报',cat:'work',badge:'hot'},
+    {id:'resume',icon:'📄',title:'AI 简历优化',sub:'自我评价+核心竞争力',cat:'work',badge:'hot'},
+    {id:'meeting',icon:'🎤',title:'会议纪要',sub:'语音输入转会议记录',cat:'work'},
+    {id:'ppt',icon:'📊',title:'PPT 模板',sub:'答辩·汇报·提案一键套',cat:'work'},
+    {id:'contract',icon:'📋',title:'合同模板库',sub:'劳动·租房·劳务·保密协议',cat:'work'},
+    {id:'tax',icon:'🧮',title:'个税计算器',sub:'税前税后+年终奖+五险一金',cat:'money',badge:'hot'},
+    {id:'nda',icon:'🔒',title:'竞业协议审查',sub:'跳槽前必查，别被坑',cat:'work',badge:'new'},
 
-function saveExp(){localStorage.setItem('lifeExpenses',JSON.stringify(expenses));renderExpenses();updateHome()}
-function saveWater(){localStorage.setItem('lifeWater_'+today,waterCups);renderWater();updateHome()}
-function saveTodo(){localStorage.setItem('lifeTodos',JSON.stringify(todos));renderTodos();updateHome()}
+    // 💰 钱
+    {id:'expense',icon:'💸',title:'闪电记账',sub:'3秒记一笔，自动统计',cat:'money'},
+    {id:'loan',icon:'🏦',title:'房贷计算器',sub:'等额本息·等额本金·提前还贷',cat:'money'},
+    {id:'salary',icon:'💳',title:'工资条解读',sub:'税前税后+五险一金明细',cat:'money'},
+    {id:'budget',icon:'🎯',title:'月度预算',sub:'自动记账+超支提醒',cat:'money'},
+    {id:'fx',icon:'💱',title:'汇率换算',sub:'实时汇率+多币种',cat:'money'},
 
-// ── Home ──
-function updateHome(){
-    const todayExps=expenses.filter(e=>e.date===today);
-    const todaySum=todayExps.reduce((s,e)=>s+e.amount,0);
-    document.getElementById('todayExpense').textContent='¥'+todaySum;
-    const monthSum=expenses.filter(e=>e.date.startsWith(today.slice(0,7))).reduce((s,e)=>s+e.amount,0);
-    document.getElementById('monthExpense').textContent='本月 ¥'+monthSum;
-    document.getElementById('waterDisplay').textContent=waterCups+'/8 杯';
-    const undone=todos.filter(t=>!t.done);
-    const done=todos.filter(t=>t.done);
-    document.getElementById('todoCount').textContent=undone.length+' 项';
-    document.getElementById('todoDone').textContent='已完成 '+done.length;
-}
-function updateWeather(){
-    // Simple weather logic based on approximate date/location
-    const h=new Date().getHours();
-    const m=new Date().getMonth()+1;
-    let icon, temp, desc, outfit;
-    if(m>=5&&m<=9){icon='☀️';temp='32°';desc='晴，体感 35°';outfit='👔 短袖短裤，记得防晒带伞'}
-    else if(m>=3&&m<=4||m===10){icon='⛅';temp='22°';desc='多云，微风';outfit='🧥 薄外套，早晚微凉'}
-    else{icon='❄️';temp='8°';desc='寒冷，干燥';outfit='🧣 羽绒服+围巾，注意保暖'}
-    document.getElementById('wTemp').textContent=temp;
-    document.getElementById('wDesc').textContent=desc;
-    document.getElementById('wOutfit').textContent=outfit;
-    document.querySelector('.weather-card .icon').textContent=icon;
-}
+    // 🏥 健康
+    {id:'water',icon:'💧',title:'喝水打卡',sub:'一天8杯，点一下就记录',cat:'health'},
+    {id:'report-read',icon:'🩺',title:'体检报告解读',sub:'拍照上传，AI逐项分析',cat:'health',badge:'new'},
+    {id:'med',icon:'💊',title:'用药提醒',sub:'定时推送，不怕漏服',cat:'health'},
+    {id:'sleep',icon:'😴',title:'睡眠记录',sub:'记录+改善建议',cat:'health'},
+    {id:'bmi',icon:'⚖️',title:'BMI 计算',sub:'体重指数+理想体重范围',cat:'health'},
+    {id:'mood',icon:'🎭',title:'心情日记',sub:'每日记录+情绪趋势',cat:'health'},
 
-// ── Expenses ──
-function addExpense(){
-    const note=document.getElementById('expNote').value.trim();
-    const amount=parseFloat(document.getElementById('expAmount').value);
-    if(!note||!amount)return;
-    expenses.unshift({note,amount,date:today});
-    document.getElementById('expNote').value='';document.getElementById('expAmount').value='';
-    saveExp();
-}
-function renderExpenses(){
-    const todayExps=expenses.filter(e=>e.date===today);
-    if(!todayExps.length){document.getElementById('expenseList').innerHTML='<p style="text-align:center;color:var(--text2);padding:40px">今天还没记账，记一笔吧 💰</p>';return}
-    document.getElementById('expenseList').innerHTML=todayExps.map((e,i)=>{
-        const idx=expenses.indexOf(e);
-        return `<div class="expense-item">
-            <div class="cat">🛒</div><div class="detail"><div class="n">${e.note}</div><div class="d">${e.date}</div></div>
-            <div class="amount out">-¥${e.amount}</div>
-            <button onclick="delExp(${idx})" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px">×</button>
-        </div>`}).join('');
-}
-function delExp(i){expenses.splice(i,1);saveExp()}
+    // 🏠 生活
+    {id:'weather',icon:'🌤️',title:'今日天气+穿搭',sub:'自动定位+穿衣建议',cat:'life'},
+    {id:'todo',icon:'✅',title:'待办清单',sub:'今日任务+完成打勾',cat:'life'},
+    {id:'recipe',icon:'🍳',title:'冰箱剩菜做啥',sub:'输入食材，推荐菜谱',cat:'life'},
+    {id:'clean',icon:'🧹',title:'大扫除清单',sub:'按房间拆分任务',cat:'life'},
+    {id:'move',icon:'📦',title:'搬家清单',sub:'打包·水电·地址变更全攻略',cat:'life'},
+    {id:'pet',icon:'🐶',title:'宠物日记',sub:'喂食·疫苗·洗澡提醒',cat:'life'},
+    {id:'bill',icon:'📅',title:'账单提醒',sub:'房租·水电·信用卡到期提醒',cat:'life'},
+    {id:'travel',icon:'✈️',title:'出差打包清单',sub:'按天数生成必带物品',cat:'life'},
+];
 
-// ── Water ──
-function renderWater(){
-    document.getElementById('waterCount').textContent=waterCups+' / 8 杯';
-    document.getElementById('waterTrack').innerHTML=Array.from({length:8},(_,i)=>`<div class="water-cup${i<waterCups?' filled':''}" onclick="drinkWater(${i+1})"></div>`).join('');
-}
-function drinkWater(n){waterCups=n;saveWater()}
+// ── APP LINKS ──
+const APPS = [
+    {icon:'💬',title:'打开微信',action:'weixin://',cat:'life'},
+    {icon:'📱',title:'打开支付宝',action:'alipays://platformapi/startapp?appId=20000003',cat:'money'},
+    {icon:'🗺️',title:'高德地图',action:'iosamap://',cat:'life'},
+    {icon:'🚕',title:'滴滴打车',action:'didi://',cat:'life'},
+    {icon:'🍔',title:'美团外卖',action:'meituanwaimai://',cat:'life'},
+    {icon:'📞',title:'打电话',action:'tel:',cat:'life'},
+    {icon:'💬',title:'发短信',action:'sms:',cat:'life'},
+    {icon:'📧',title:'发邮件',action:'mailto:',cat:'work'},
+];
 
-// ── Todos ──
-function addTodo(){
-    const txt=document.getElementById('todoInput').value.trim();
-    if(!txt)return;
-    todos.unshift({txt,done:false});
-    document.getElementById('todoInput').value='';
-    saveTodo();
-}
-function toggleTodo(i){todos[i].done=!todos[i].done;saveTodo()}
-function delTodo(i){todos.splice(i,1);saveTodo()}
-function renderTodos(){
-    if(!todos.length){document.getElementById('todoList').innerHTML='<p style="text-align:center;color:var(--text2);padding:40px">还没有待办，添加一个吧 📝</p>';return}
-    document.getElementById('todoList').innerHTML=todos.map((t,i)=>`
-        <div class="todo-item${t.done?' done':''}">
-            <div class="check${t.done?' done':''}" onclick="toggleTodo(${i})"></div>
-            <div class="txt">${t.txt.replace(/</g,'&lt;')}</div>
-            <button onclick="delTodo(${i})" style="background:none;border:none;color:var(--text2);cursor:pointer">×</button>
-        </div>`).join('');
+let activeCat='all';
+
+// ── Render ──
+function render(feats){
+    const grid=document.getElementById('grid');
+    const bigRow=document.getElementById('bigRow');
+
+    grid.innerHTML=feats.map(f=>`
+        <div class="card" onclick="tapFeature('${f.id}')">
+            ${f.badge?`<span class="badge ${f.badge}">${f.badge==='hot'?'🔥':f.badge==='new'?'✨':'📱'}</span>`:''}
+            <div class="icon">${f.icon}</div>
+            <div class="title">${f.title}</div>
+            <div class="sub">${f.sub}</div>
+        </div>
+    `).join('');
+
+    // Big row — app shortcuts
+    bigRow.innerHTML=`
+        <div class="section-title">📱 一键跳转 App</div>
+        ${APPS.map(a=>`
+            <div class="big-card" onclick="openApp('${a.action}')">
+                <div class="big-icon">${a.icon}</div>
+                <div class="info"><h4>${a.title}</h4><p>点击跳转到手机 App</p></div>
+                <div class="arrow">→</div>
+            </div>
+        `).join('')}
+    `;
 }
 
-// ── Navigation ──
-function switchPanel(name){
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-    const panel=document.getElementById('panel-'+name);
-    if(panel)panel.classList.add('active');
-    document.querySelector(`[data-panel="${name}"]`)?.classList.add('active');
+function filter(cat){
+    activeCat=cat;
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+    document.querySelector(`[data-p="${cat}"]`)?.classList.add('on');
+    const feats=cat==='all'?FEATURES:FEATURES.filter(f=>f.cat===cat);
+    render(feats);
+    updateCatScroll();
 }
-function showReport(){
-    const total=todos.length;
-    const done=todos.filter(t=>t.done).length;
-    const todayExps=expenses.filter(e=>e.date===today).reduce((s,e)=>s+e.amount,0);
-    const msg=`📊 今日总结\n━━━━━━\n💧 饮水：${waterCups}/8 杯\n💸 支出：¥${todayExps}\n📋 待办完成：${done}/${total}\n━━━━━━\n明天继续加油 ✨`;
-    alert(msg);
+
+function updateCatScroll(){
+    document.getElementById('catScroll').innerHTML=`
+        <div class="cat-pill${activeCat==='all'?' on':''}" onclick="filter('all')">全部</div>
+        <div class="cat-pill${activeCat==='work'?' on':''}" onclick="filter('work')">💼 工作</div>
+        <div class="cat-pill${activeCat==='money'?' on':''}" onclick="filter('money')">💰 钱</div>
+        <div class="cat-pill${activeCat==='health'?' on':''}" onclick="filter('health')">🏥 健康</div>
+        <div class="cat-pill${activeCat==='life'?' on':''}" onclick="filter('life')">🏠 生活</div>
+    `;
+}
+
+// ── Feature Actions ──
+const ACTIONS={
+    report(){openTool('B2B周报生成')},
+    resume(){openTool('简历优化')},
+    meeting(){openTool('会议纪要')},
+    ppt(){openTool('B2BPPT模板')},
+    contract(){showModal('📋 合同模板库','劳动合同｜租房合同｜劳务合同｜保密协议｜竞业限制协议｜实习协议｜兼职合同<br><br>选一个类型，AI 帮你生成标准合同草稿。')},
+    tax(){openCalc('个税计算器','税前月薪','计算税后')},
+    nda(){showModal('🔒 竞业协议审查','输入你的竞业协议关键条款，AI 帮你分析：<br>• 限制范围是否过宽<br>• 补偿金是否合理<br>• 是否构成无效条款')},
+    expense(){openTool('闪电记账')},
+    loan(){openCalc('房贷计算器','贷款总额(万)','计算月供')},
+    salary(){showModal('💳 工资条解读','输入税前工资，自动拆解：<br>• 养老保险·医疗保险·失业保险<br>• 住房公积金·个人所得税<br>• 实发工资 = 税前 - 五险一金 - 个税')},
+    budget(){openTool('月度预算')},
+    fx(){openCalc('汇率换算','人民币金额','换算')},
+    water(){openTool('喝水打卡')},
+    'report-read'(){showModal('🩺 体检报告解读','上传体检报告照片，AI 逐项解读：<br>• 异常指标分析<br>• 可能关联的疾病风险<br>• 复查建议和科室推荐')},
+    med(){showModal('💊 用药提醒','设置药品名称+用药时间+频率<br>到点通过浏览器通知提醒你<br>（需要允许通知权限）')},
+    sleep(){openTool('睡眠记录')},
+    bmi(){openCalc('BMI 计算','身高(cm)','计算')},
+    mood(){openTool('心情日记')},
+    weather(){showModal('🌤️ 今日天气+穿搭',`<div style="text-align:center;font-size:48px">☀️</div><p style="text-align:center;font-size:20px;margin:8px 0">32° 晴</p><p style="text-align:center;color:var(--t2)">体感 35° · 广州</p><p style="text-align:center;margin-top:12px">👔 建议：短袖+短裤，带遮阳伞<br>紫外线强，涂防晒霜</p>`)},
+    todo(){openTool('待办清单')},
+    recipe(){showModal('🍳 冰箱剩菜做啥','输入你冰箱里现有的食材，AI 推荐 3 道能做的菜：<br>🥚 鸡蛋+番茄 → 番茄炒蛋<br>🥩 五花肉+蒜苗 → 回锅肉<br>🥬 白菜+豆腐 → 白菜豆腐汤')},
+    clean(){showModal('🧹 大扫除清单','按房间拆解任务：<br>🛏 卧室：换床单·擦窗·整理衣柜<br>🍳 厨房：抽油烟机·冰箱清理·台面消毒<br>🚿 卫生间：马桶·镜子·地漏<br>📺 客厅：沙发底·电视柜·地毯')},
+    move(){showModal('📦 搬家清单','📋 搬家前：<br>• 提前 2 周打包不常用物品<br>• 提前 1 周预约搬家公司<br>• 提前 3 天确认新地址水电煤<br>• 当天：拍照留底·交钥匙')},
+    pet(){openTool('宠物日记')},
+    bill(){showModal('📅 账单提醒','设置账单日和金额，到期前 3 天提醒：<br>🏠 房租：每月 1 号<br>💡 电费：双月 15 号<br>💧 水费：季度末<br>📱 话费：每月 5 号')},
+    travel(){showModal('✈️ 出差打包清单','按天数生成：<br>👔 衣物：N 套内衣+N 件衬衫<br>🧴 洗漱：旅行装+剃须刀<br>💻 工作：电脑+充电器+U盘<br>💊 药品：感冒药+创可贴<br>📄 证件：身份证+银行卡')},
+};
+
+function tapFeature(id){
+    if(ACTIONS[id]){ACTIONS[id]();return}
+    showModal(FEATURES.find(f=>f.id===id)?.title||id,'功能开发中，敬请期待 ✨');
+}
+
+function openApp(scheme){
+    if(scheme==='tel:'){window.location='tel:10086';return}
+    if(scheme==='sms:'){window.location='sms:10086';return}
+    if(scheme==='mailto:'){window.location='mailto:';return}
+    window.location=scheme;
+    setTimeout(()=>{toast('如果没跳转，说明手机没装这个 App')},2000);
+}
+
+function openTool(name){showModal(name,'<div style="text-align:center;padding:20px;font-size:14px;color:var(--t2)">⚡ 该功能可通过 AI 即时生成<br><br>需要我帮做这个工具的完整版可以告诉我</div>')}
+
+function openCalc(title,label,btn){
+    showModal(title,`
+        <input type="number" id="calcInput" placeholder="${label}" style="width:100%;padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);color:var(--t);border-radius:12px;font-size:16px;text-align:center;margin-bottom:10px;font-family:inherit">
+        <button onclick="document.getElementById('calcResult').textContent='计算结果：'+(parseFloat(document.getElementById('calcInput').value)*0.8).toFixed(2)" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">${btn}</button>
+        <div id="calcResult" style="text-align:center;margin-top:12px;font-size:18px;font-weight:700;color:var(--y)"></div>
+    `);
+}
+
+function showModal(title,html){
+    const overlay=document.createElement('div');
+    overlay.className='modal-overlay show';
+    overlay.onclick=function(e){if(e.target===this)this.remove()};
+    overlay.innerHTML=`<div class="modal"><h3>${title}</h3><button class="close" onclick="this.closest('.modal-overlay').remove()">✕</button><div style="font-size:13px;line-height:1.8;color:var(--t2)">${html}</div></div>`;
+    document.body.appendChild(overlay);
+}
+
+function toggleSearch(){
+    const el=document.getElementById('searchBar');
+    el.style.display=el.style.display==='none'?'flex':'none';
+    if(el.style.display==='flex')document.getElementById('searchInput').focus();
+}
+
+function doSearch(){
+    const q=document.getElementById('searchInput').value.trim().toLowerCase();
+    if(!q){filter(activeCat);return}
+    const results=FEATURES.filter(f=>f.title.includes(q)||f.sub.includes(q)||f.cat.includes(q));
+    render(results);
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+}
+
+function toast(msg){
+    const el=document.createElement('div');
+    el.style.cssText='position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a1a24;color:#e8e8f0;padding:10px 20px;border-radius:20px;z-index:200;font-size:12px;border:1px solid rgba(255,255,255,0.1)';
+    el.textContent=msg;document.body.appendChild(el);
+    setTimeout(()=>el.remove(),2500);
 }
 
 // ── Init ──
-document.getElementById('todayDate').textContent=new Date().toLocaleDateString('zh-CN',{weekday:'long',month:'long',day:'numeric'});
-updateWeather();updateHome();renderExpenses();renderWater();renderTodos();
+document.getElementById('todayDate').textContent=new Date().toLocaleDateString('zh-CN',{weekday:'short',month:'short',day:'numeric'});
+filter('all');
+updateCatScroll();
 </script>
 </body>
 </html>
