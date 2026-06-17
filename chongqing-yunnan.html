@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>🚗 重庆 → 云南 · 旅行路线</title>
+    <style>
+        :root{--bg:#0a0a14;--card:rgba(255,255,255,0.03);--a:#818cf8;--g:#10b981;--y:#f59e0b;--r:#f43f5e;--t:#e8e8f0;--t2:rgba(255,255,255,0.4)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t);line-height:1.7}
+        .hero{
+            background:linear-gradient(180deg,rgba(99,102,241,0.1),transparent 70%),
+            url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%232d1b69"/><stop offset="1" stop-color="%230a0a14"/></linearGradient></defs><rect fill="url(%23g)" width="800" height="400"/><path d="M0 280 Q100 200 200 260 Q350 180 450 240 Q550 150 650 220 Q750 180 800 200 L800 400 L0 400Z" fill="%231e3a5f" opacity="0.5"/><path d="M0 320 Q150 270 300 310 Q450 250 550 300 Q650 260 800 290 L800 400 L0 400Z" fill="%232d5016" opacity="0.4"/></svg>');
+            background-size:cover;background-position:bottom;text-align:center;padding:60px 20px 50px
+        }
+        .hero .badge{display:inline-block;padding:4px 16px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);border-radius:20px;font-size:11px;color:var(--g);letter-spacing:2px;margin-bottom:16px}
+        .hero h1{font-size:clamp(28px,5vw,44px);font-weight:900;letter-spacing:2px}
+        .hero h1 span{background:linear-gradient(135deg,#818cf8,#a78bfa,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero .punch{font-size:14px;color:var(--t2);margin-top:8px}
+        .hero .stats{display:flex;gap:24px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+        .hero .stat{text-align:center}
+        .hero .stat .v{font-size:24px;font-weight:900;color:var(--y)}
+        .hero .stat .l{font-size:11px;color:var(--t2)}
+        .container{max-width:800px;margin:0 auto;padding:0 16px 40px}
+        .section{margin-bottom:24px}
+        .section h2{font-size:18px;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+        .day-card{background:var(--card);border:1px solid rgba(255,255,255,0.04);border-radius:16px;padding:20px;margin-bottom:10px;position:relative}
+        .day-card .day-num{position:absolute;top:16px;right:16px;font-size:11px;color:var(--a);font-weight:700;letter-spacing:1px}
+        .day-card h4{font-size:15px;margin-bottom:4px}
+        .day-card .route{font-size:12px;color:var(--a);margin-bottom:8px}
+        .day-card ul{list-style:none;padding:0}
+        .day-card ul li{font-size:13px;color:var(--t2);padding:3px 0;padding-left:16px;position:relative}
+        .day-card ul li::before{content:'•';position:absolute;left:0;color:var(--a)}
+        .spot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+        .spot{background:var(--card);border:1px solid rgba(255,255,255,0.04);border-radius:14px;padding:18px;transition:all 0.2s}
+        .spot:hover{border-color:rgba(129,140,248,0.2)}
+        .spot .icon{font-size:28px;margin-bottom:6px}
+        .spot h4{font-size:14px}
+        .spot p{font-size:12px;color:var(--t2);margin-top:2px}
+        .tip-box{background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.1);border-radius:14px;padding:16px 18px;margin-bottom:10px;font-size:13px}
+        .tip-box b{color:var(--y)}
+        .budget-row{display:flex;gap:10px;flex-wrap:wrap}
+        .budget-item{flex:1;min-width:120px;background:var(--card);border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:14px;text-align:center}
+        .budget-item .b-icon{font-size:24px}
+        .budget-item .b-amount{font-size:20px;font-weight:900;margin:4px 0;color:var(--g)}
+        .budget-item .b-label{font-size:11px;color:var(--t2)}
+        .footer{text-align:center;padding:30px;color:var(--t2);font-size:12px}
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="badge">🗺️ 最美自驾线路</div>
+    <h1>重庆 <span>→</span> 云南</h1>
+    <p class="punch">一路向南 · 穿山越岭 · 从山城到彩云之南</p>
+    <div class="stats">
+        <div class="stat"><div class="v">1,200km</div><div class="l">总里程</div></div>
+        <div class="stat"><div class="v">8天</div><div class="l">建议天数</div></div>
+        <div class="stat"><div class="v">2省1市</div><div class="l">跨越区域</div></div>
+        <div class="stat"><div class="v">15+</div><div class="l">精华景点</div></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- 路线总览 -->
+    <div class="section">
+        <h2>🗺️ 路线总览</h2>
+        <div class="day-card">
+            <h4>重庆 → 贵阳 → 安顺 → 昆明 → 大理 → 丽江 → 香格里拉</h4>
+            <div class="route">🚗 渝筑高速 G75 → 沪昆高速 G60 → 杭瑞高速 G56</div>
+            <ul>
+                <li>全程约 1,200 公里，自驾 12-14 小时（不含休息）</li>
+                <li>途经贵州高原，山路弯多但风景绝美</li>
+                <li>建议边开边玩，分 4-5 天走完</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 每日行程 -->
+    <div class="section">
+        <h2>📅 8 天推荐行程</h2>
+
+        <div class="day-card">
+            <div class="day-num">DAY 1</div>
+            <h4>🏙️ 重庆出发 → 贵阳</h4>
+            <div class="route">🚗 约 380km · 4.5h</div>
+            <ul>
+                <li>早上重庆出发，沿 G75 渝筑高速南下</li>
+                <li>中午抵达贵阳，吃一碗正宗肠旺面</li>
+                <li>下午逛甲秀楼、黔灵山公园</li>
+                <li>晚上二七路小吃街：丝娃娃、花溪牛肉粉</li>
+            </ul>
+        </div>
+
+        <div class="day-card">
+            <div class="day-num">DAY 2</div>
+            <h4>🏞️ 贵阳 → 安顺（黄果树瀑布）</h4>
+            <div class="route">🚗 约 130km · 1.5h</div>
+            <ul>
+                <li>上午贵阳出发，前往黄果树瀑布</li>
+                <li>游玩大瀑布 + 陡坡塘 + 天星桥（全天）</li>
+                <li>7-8 月水量最大，水帘洞必穿</li>
+                <li>晚上住安顺，吃夺夺粉、安顺裹卷</li>
+            </ul>
+        </div>
+
+        <div class="day-card">
+            <div class="day-num">DAY 3</div>
+            <h4>🌉 安顺 → 昆明</h4>
+            <div class="route">🚗 约 450km · 5h</div>
+            <ul>
+                <li>上午出发，经 G60 沪昆高速进入云南</li>
+                <li>途经晴隆二十四道拐（可选停留）</li>
+                <li>下午抵达春城昆明</li>
+                <li>晚上逛南强街夜市，吃过桥米线</li>
+            </ul>
+        </div>
+
+        <div class="day-card">
+            <div class="day-num">DAY 4</div>
+            <h4>🌿 昆明一日游</h4>
+            <div class="route">🏙️ 市内轻松游</div>
+            <ul>
+                <li>上午：滇池海埂大坝喂红嘴鸥（冬季）</li>
+                <li>中午：篆新菜市场逛吃本地小吃</li>
+                <li>下午：斗南花市——亚洲最大鲜花市场，10块钱买一捧玫瑰</li>
+                <li>晚上：翠湖公园散步，云南大学周边文艺小店</li>
+            </ul>
+        </div>
+
+        <div class="day-card">
+            <div class="day-num">DAY 5</div>
+            <h4>🏔️ 昆明 → 大理</h4>
+            <div class="route">🚗 约 340km · 4h | 🚄 高铁 2h</div>
+            <ul>
+                <li>上午出发，沿 G56 杭瑞高速一路向西</li>
+                <li>下午抵达大理古城，入住洱海边民宿</li>
+                <li>骑行洱海生态廊道，看苍山日落</li>
+                <li>晚上古城人民路逛店、听民谣</li>
+            </ul>
+        </div>
+
+        <div class="day-card">
+            <div class="day-num">DAY 6</div>
+            <h4>☁️ 大理深度游</h4>
+            <div class="route">🛵 租电动车环洱海</div>
+            <ul>
+                <li>上午：喜洲古镇 + 转角楼 + 稻田（3-5月油菜花 / 9月稻香）</li>
+                <li>中午：喜洲粑粑 + 豌豆粉</li>
+                <li>下午：双廊古镇 + 南诏风情岛</li>
+                <li>傍晚：磻溪村 S 湾拍日落，最出片的地方</li>
+            </ul>
+        </div>
+
+        <div class="day-card">
+            <div class="day-num">DAY 7</div>
+            <h4>🏔️ 大理 → 丽江</h4>
+            <div class="route">🚗 约 190km · 2.5h | 🚄 高铁 1.5h</div>
+            <ul>
+                <li>上午出发，中午抵达丽江</li>
+                <li>下午逛大研古城 + 四方街 + 大水车</li>
+                <li>傍晚狮子山看古城全景</li>
+                <li>晚上忠义市场吃丽江粑粑、腊排骨火锅</li>
+            </ul>
+        </div>
+
+        <div class="day-card">
+            <div class="day-num">DAY 8</div>
+            <h4>🏔️ 玉龙雪山 → 返程</h4>
+            <div class="route">🚡 冰川大索道</div>
+            <ul>
+                <li>早起赶玉龙雪山第一班索道（需提前 3 天抢票）</li>
+                <li>登 4680m 冰川公园，蓝月谷拍照</li>
+                <li>下午从丽江机场飞回 / 或原路自驾返回</li>
+                <li>时间充裕可继续往香格里拉（虎跳峡 + 松赞林寺 + 普达措）</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 沿途景点 -->
+    <div class="section">
+        <h2>🌟 沿途必打卡</h2>
+        <div class="spot-grid">
+            <div class="spot"><div class="icon">🏙️</div><h4>重庆洪崖洞</h4><p>千与千寻同款夜景，出发前先打卡</p></div>
+            <div class="spot"><div class="icon">🏛️</div><h4>贵阳甲秀楼</h4><p>南明河上的明代建筑，夜景绝美</p></div>
+            <div class="spot"><div class="icon">💧</div><h4>黄果树瀑布</h4><p>亚洲最大瀑布，7-8月水量最壮观</p></div>
+            <div class="spot"><div class="icon">🌊</div><h4>昆明滇池</h4><p>高原明珠，冬天有红嘴鸥</p></div>
+            <div class="spot"><div class="icon">🌸</div><h4>斗南花市</h4><p>亚洲最大鲜花市场，10块买一束浪漫</p></div>
+            <div class="spot"><div class="icon">🏔️</div><h4>苍山洱海</h4><p>风花雪月，骑行天堂</p></div>
+            <div class="spot"><div class="icon">🏘️</div><h4>喜洲古镇</h4><p>白族民居 + 稻田，文艺出片圣地</p></div>
+            <div class="spot"><div class="icon">🏯</div><h4>丽江古城</h4><p>世界文化遗产，小桥流水人家</p></div>
+            <div class="spot"><div class="icon">🏔️</div><h4>玉龙雪山</h4><p>4680m 冰川公园，离赤道最近的雪山</p></div>
+            <div class="spot"><div class="icon">💎</div><h4>蓝月谷</h4><p>雪山脚下的蒂芙尼蓝湖泊</p></div>
+            <div class="spot"><div class="icon">⛰️</div><h4>虎跳峡</h4><p>世界最深峡谷之一，徒步圣地</p></div>
+            <div class="spot"><div class="icon">🏯</div><h4>松赞林寺</h4><p>小布达拉宫，藏传佛教圣地</p></div>
+        </div>
+    </div>
+
+    <!-- 预算 -->
+    <div class="section">
+        <h2>💰 预算参考（人均）</h2>
+        <div class="budget-row">
+            <div class="budget-item"><div class="b-icon">⛽</div><div class="b-amount">¥800</div><div class="b-label">油费+过路费</div></div>
+            <div class="budget-item"><div class="b-icon">🏨</div><div class="b-amount">¥1,400</div><div class="b-label">住宿 7晚（200/晚）</div></div>
+            <div class="budget-item"><div class="b-icon">🍜</div><div class="b-amount">¥1,200</div><div class="b-label">餐饮（150/天）</div></div>
+            <div class="budget-item"><div class="b-icon">🎫</div><div class="b-amount">¥600</div><div class="b-label">门票</div></div>
+            <div class="budget-item"><div class="b-icon">💰</div><div class="b-amount">¥4,000</div><div class="b-label">人均总计</div></div>
+        </div>
+    </div>
+
+    <!-- 实用贴士 -->
+    <div class="section">
+        <h2>💡 实用贴士</h2>
+        <div class="tip-box">📅 <b>最佳季节：</b>3-5 月（春暖花开）、9-11 月（秋高气爽）。夏天 7-8 月是雨季但瀑布水量最大。冬天滇池有红嘴鸥。</div>
+        <div class="tip-box">🚗 <b>自驾须知：</b>贵州段多隧道弯道，控制车速。云南段高速路况好但海拔变化大（昆明 1900m → 香格里拉 3300m），初次上高原备氧气瓶。</div>
+        <div class="tip-box">🏨 <b>住宿建议：</b>大理住洱海边（才村/龙龛），丽江住古城外围（安静且便宜），香格里拉住独克宗古城。</div>
+        <div class="tip-box">🎫 <b>门票提醒：</b>玉龙雪山大索道票需提前 3 天在「丽江旅游集团」小程序抢，暑假必被秒杀。黄果树提前 1 天在「一码游贵州」预约。</div>
+        <div class="tip-box">🍜 <b>必吃清单：</b>重庆火锅 → 贵阳肠旺面 → 安顺夺夺粉 → 昆明过桥米线 → 大理乳扇 → 丽江腊排骨 → 香格里拉酥油茶</div>
+        <div class="tip-box">⚠️ <b>高原反应：</b>香格里拉海拔 3300m+，初次上高原建议现在大理（2000m）适应两天再往高海拔走。备红景天、葡萄糖。</div>
+    </div>
+
+</div>
+
+<div class="footer">🚗 从山城到彩云之南 · 最美的风景在路上</div>
+</body>
+</html>
