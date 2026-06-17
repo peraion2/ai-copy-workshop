@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="生活管家">
+    <meta name="theme-color" content="#0a0a14">
+    <link rel="manifest" href="data:application/json,{}">
+    <title>🏠 生活管家</title>
+    <style>
+        :root{--bg:#0a0a14;--card:rgba(255,255,255,0.03);--accent:#6366f1;--gold:#f59e0b;--green:#10b981;--red:#ef4444;--blue:#3b82f6;--text:#e8e8f0;--text2:rgba(255,255,255,0.4)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+            background:var(--bg);color:var(--text);
+            min-height:100vh;max-width:480px;margin:0 auto;
+            -webkit-tap-highlight-color:transparent;
+            padding-bottom:80px;overflow-x:hidden;
+        }
+        /* Header */
+        .header{padding:20px 16px 0;display:flex;align-items:center;justify-content:space-between}
+        .header h1{font-size:20px;font-weight:800;letter-spacing:1px}
+        .header .date{font-size:12px;color:var(--text2)}
+        /* Weather */
+        .weather-card{
+            margin:16px;padding:20px;background:linear-gradient(135deg,#1e1b4b,#312e81);
+            border-radius:20px;display:flex;align-items:center;gap:16px;
+        }
+        .weather-card .temp{font-size:48px;font-weight:200;line-height:1}
+        .weather-card .info{flex:1}
+        .weather-card .info .city{font-size:14px;opacity:0.8}
+        .weather-card .info .desc{font-size:13px;opacity:0.6;margin-top:2px}
+        .weather-card .outfit{font-size:12px;background:rgba(255,255,255,0.1);padding:6px 12px;border-radius:20px;margin-top:6px;display:inline-block}
+        .weather-card .icon{font-size:52px}
+        /* Quick Grid */
+        .quick-grid{
+            display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px;margin-bottom:12px;
+        }
+        .quick-card{
+            background:var(--card);border:1px solid rgba(255,255,255,0.05);
+            border-radius:16px;padding:18px;cursor:pointer;transition:all 0.2s;
+            position:relative;overflow:hidden;
+        }
+        .quick-card:active{transform:scale(0.97)}
+        .quick-card .label{font-size:12px;color:var(--text2);margin-bottom:4px}
+        .quick-card .value{font-size:28px;font-weight:800}
+        .quick-card .extra{font-size:11px;color:var(--text2);margin-top:4px}
+        /* Bottom Nav */
+        .nav{
+            position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+            width:100%;max-width:480px;background:rgba(10,10,20,0.95);
+            border-top:1px solid rgba(255,255,255,0.05);display:flex;
+            padding:8px 0 env(safe-area-inset-bottom,8px);
+            backdrop-filter:blur(20px);z-index:50;
+        }
+        .nav-item{
+            flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+            padding:8px 0;cursor:pointer;font-size:10px;color:var(--text2);transition:all 0.2s;
+            border:none;background:none;
+        }
+        .nav-item.active{color:var(--accent)}
+        .nav-item .nav-icon{font-size:22px}
+        /* Panels */
+        .panel{display:none;padding:16px}
+        .panel.active{display:block;animation:fadeIn 0.3s ease}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        /* Expense */
+        .expense-form{display:flex;gap:8px;margin-bottom:16px}
+        .expense-form input{
+            flex:1;padding:12px;background:var(--card);border:1px solid rgba(255,255,255,0.08);
+            color:var(--text);border-radius:12px;font-size:14px;outline:none;font-family:inherit;
+        }
+        .expense-form input:focus{border-color:var(--accent)}
+        .expense-form button{
+            padding:12px 18px;background:var(--accent);color:#fff;border:none;border-radius:12px;
+            font-weight:700;cursor:pointer;font-size:14px;
+        }
+        .expense-item{
+            display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);
+            border-radius:12px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.04);
+        }
+        .expense-item .cat{font-size:24px}
+        .expense-item .detail{flex:1}
+        .expense-item .detail .n{font-size:14px}
+        .expense-item .detail .d{font-size:11px;color:var(--text2)}
+        .expense-item .amount{font-weight:700}
+        .amount.in{color:var(--green)}.amount.out{color:var(--red)}
+        /* Water */
+        .water-track{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:20px 0}
+        .water-cup{
+            width:40px;height:50px;border-radius:8px;border:2px solid rgba(255,255,255,0.15);
+            cursor:pointer;transition:all 0.2s;
+        }
+        .water-cup.filled{background:var(--blue);border-color:var(--blue)}
+        .water-count{text-align:center;font-size:24px;font-weight:800;margin:12px 0}
+        /* Todo */
+        .todo-item{
+            display:flex;align-items:center;gap:10px;padding:14px;background:var(--card);
+            border-radius:12px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.04);
+        }
+        .todo-item .check{
+            width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);
+            cursor:pointer;flex-shrink:0;transition:all 0.2s;
+        }
+        .todo-item .check.done{background:var(--green);border-color:var(--green)}
+        .todo-item .check.done::after{content:'✓';display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;height:100%}
+        .todo-item .txt{flex:1;font-size:14px}
+        .todo-item.done .txt{text-decoration:line-through;color:var(--text2)}
+        .float-add{
+            position:fixed;bottom:100px;right:calc(50% - 210px);width:48px;height:48px;
+            background:var(--accent);border-radius:50%;color:#fff;font-size:24px;border:none;
+            cursor:pointer;box-shadow:0 4px 20px rgba(99,102,241,0.4);z-index:10;
+            display:flex;align-items:center;justify-content:center;
+        }
+        @media(max-width:480px){.float-add{right:16px}}
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div><h1>🏠 生活管家</h1><div class="date" id="todayDate"></div></div>
+</div>
+
+<!-- Weather -->
+<div class="weather-card" id="weatherCard">
+    <div class="icon">☀️</div>
+    <div>
+        <div class="temp" id="wTemp">32°</div>
+        <div class="info"><div class="city">📍 广州</div><div class="desc" id="wDesc">晴，体感 35°</div></div>
+        <div class="outfit" id="wOutfit">👔 今天适合穿短袖，建议带伞</div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="quick-grid">
+    <div class="quick-card" onclick="switchPanel('expense')">
+        <div class="label">💸 今日支出</div>
+        <div class="value" style="color:var(--red)" id="todayExpense">¥0</div>
+        <div class="extra" id="monthExpense">本月 ¥0</div>
+    </div>
+    <div class="quick-card" onclick="switchPanel('water')">
+        <div class="label">💧 今日饮水</div>
+        <div class="value" style="color:var(--blue)" id="waterDisplay">0/8 杯</div>
+        <div class="extra">每杯 250ml</div>
+    </div>
+    <div class="quick-card" onclick="switchPanel('todo')">
+        <div class="label">📋 待办</div>
+        <div class="value" style="color:var(--accent)" id="todoCount">0 项</div>
+        <div class="extra" id="todoDone">已完成 0</div>
+    </div>
+    <div class="quick-card" onclick="showReport()">
+        <div class="label">📊 周报</div>
+        <div class="value" style="color:var(--gold)">一键</div>
+        <div class="extra">生成本周总结</div>
+    </div>
+</div>
+
+<!-- Panels -->
+<div class="panel" id="panel-home"></div>
+
+<div class="panel" id="panel-expense">
+    <h3 style="margin-bottom:12px">💸 记一笔</h3>
+    <div class="expense-form">
+        <input type="text" id="expNote" placeholder="买了什么…" maxlength="20">
+        <input type="number" id="expAmount" placeholder="金额" style="width:80px">
+        <button onclick="addExpense()">记</button>
+    </div>
+    <div id="expenseList"></div>
+</div>
+
+<div class="panel" id="panel-water">
+    <h3 style="margin-bottom:12px;text-align:center">💧 今日饮水打卡</h3>
+    <div class="water-count" id="waterCount">0 / 8 杯</div>
+    <div class="water-track" id="waterTrack"></div>
+    <p style="text-align:center;color:var(--text2);font-size:12px;margin-top:12px">点一下杯子记录喝水</p>
+</div>
+
+<div class="panel" id="panel-todo">
+    <h3 style="margin-bottom:12px">📋 今日待办</h3>
+    <div class="expense-form">
+        <input type="text" id="todoInput" placeholder="添加新任务…">
+        <button onclick="addTodo()">+</button>
+    </div>
+    <div id="todoList"></div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="nav">
+    <button class="nav-item active" data-panel="home" onclick="switchPanel('home')"><span class="nav-icon">🏠</span>首页</button>
+    <button class="nav-item" data-panel="expense" onclick="switchPanel('expense')"><span class="nav-icon">💸</span>记账</button>
+    <button class="nav-item" data-panel="water" onclick="switchPanel('water')"><span class="nav-icon">💧</span>喝水</button>
+    <button class="nav-item" data-panel="todo" onclick="switchPanel('todo')"><span class="nav-icon">📋</span>待办</button>
+</nav>
+
+<script>
+// ── Data ──
+const today=new Date().toISOString().split('T')[0];
+let expenses=JSON.parse(localStorage.getItem('lifeExpenses')||'[]');
+let waterCups=parseInt(localStorage.getItem('lifeWater_'+today)||'0');
+let todos=JSON.parse(localStorage.getItem('lifeTodos')||'[]');
+
+function saveExp(){localStorage.setItem('lifeExpenses',JSON.stringify(expenses));renderExpenses();updateHome()}
+function saveWater(){localStorage.setItem('lifeWater_'+today,waterCups);renderWater();updateHome()}
+function saveTodo(){localStorage.setItem('lifeTodos',JSON.stringify(todos));renderTodos();updateHome()}
+
+// ── Home ──
+function updateHome(){
+    const todayExps=expenses.filter(e=>e.date===today);
+    const todaySum=todayExps.reduce((s,e)=>s+e.amount,0);
+    document.getElementById('todayExpense').textContent='¥'+todaySum;
+    const monthSum=expenses.filter(e=>e.date.startsWith(today.slice(0,7))).reduce((s,e)=>s+e.amount,0);
+    document.getElementById('monthExpense').textContent='本月 ¥'+monthSum;
+    document.getElementById('waterDisplay').textContent=waterCups+'/8 杯';
+    const undone=todos.filter(t=>!t.done);
+    const done=todos.filter(t=>t.done);
+    document.getElementById('todoCount').textContent=undone.length+' 项';
+    document.getElementById('todoDone').textContent='已完成 '+done.length;
+}
+function updateWeather(){
+    // Simple weather logic based on approximate date/location
+    const h=new Date().getHours();
+    const m=new Date().getMonth()+1;
+    let icon, temp, desc, outfit;
+    if(m>=5&&m<=9){icon='☀️';temp='32°';desc='晴，体感 35°';outfit='👔 短袖短裤，记得防晒带伞'}
+    else if(m>=3&&m<=4||m===10){icon='⛅';temp='22°';desc='多云，微风';outfit='🧥 薄外套，早晚微凉'}
+    else{icon='❄️';temp='8°';desc='寒冷，干燥';outfit='🧣 羽绒服+围巾，注意保暖'}
+    document.getElementById('wTemp').textContent=temp;
+    document.getElementById('wDesc').textContent=desc;
+    document.getElementById('wOutfit').textContent=outfit;
+    document.querySelector('.weather-card .icon').textContent=icon;
+}
+
+// ── Expenses ──
+function addExpense(){
+    const note=document.getElementById('expNote').value.trim();
+    const amount=parseFloat(document.getElementById('expAmount').value);
+    if(!note||!amount)return;
+    expenses.unshift({note,amount,date:today});
+    document.getElementById('expNote').value='';document.getElementById('expAmount').value='';
+    saveExp();
+}
+function renderExpenses(){
+    const todayExps=expenses.filter(e=>e.date===today);
+    if(!todayExps.length){document.getElementById('expenseList').innerHTML='<p style="text-align:center;color:var(--text2);padding:40px">今天还没记账，记一笔吧 💰</p>';return}
+    document.getElementById('expenseList').innerHTML=todayExps.map((e,i)=>{
+        const idx=expenses.indexOf(e);
+        return `<div class="expense-item">
+            <div class="cat">🛒</div><div class="detail"><div class="n">${e.note}</div><div class="d">${e.date}</div></div>
+            <div class="amount out">-¥${e.amount}</div>
+            <button onclick="delExp(${idx})" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px">×</button>
+        </div>`}).join('');
+}
+function delExp(i){expenses.splice(i,1);saveExp()}
+
+// ── Water ──
+function renderWater(){
+    document.getElementById('waterCount').textContent=waterCups+' / 8 杯';
+    document.getElementById('waterTrack').innerHTML=Array.from({length:8},(_,i)=>`<div class="water-cup${i<waterCups?' filled':''}" onclick="drinkWater(${i+1})"></div>`).join('');
+}
+function drinkWater(n){waterCups=n;saveWater()}
+
+// ── Todos ──
+function addTodo(){
+    const txt=document.getElementById('todoInput').value.trim();
+    if(!txt)return;
+    todos.unshift({txt,done:false});
+    document.getElementById('todoInput').value='';
+    saveTodo();
+}
+function toggleTodo(i){todos[i].done=!todos[i].done;saveTodo()}
+function delTodo(i){todos.splice(i,1);saveTodo()}
+function renderTodos(){
+    if(!todos.length){document.getElementById('todoList').innerHTML='<p style="text-align:center;color:var(--text2);padding:40px">还没有待办，添加一个吧 📝</p>';return}
+    document.getElementById('todoList').innerHTML=todos.map((t,i)=>`
+        <div class="todo-item${t.done?' done':''}">
+            <div class="check${t.done?' done':''}" onclick="toggleTodo(${i})"></div>
+            <div class="txt">${t.txt.replace(/</g,'&lt;')}</div>
+            <button onclick="delTodo(${i})" style="background:none;border:none;color:var(--text2);cursor:pointer">×</button>
+        </div>`).join('');
+}
+
+// ── Navigation ──
+function switchPanel(name){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    const panel=document.getElementById('panel-'+name);
+    if(panel)panel.classList.add('active');
+    document.querySelector(`[data-panel="${name}"]`)?.classList.add('active');
+}
+function showReport(){
+    const total=todos.length;
+    const done=todos.filter(t=>t.done).length;
+    const todayExps=expenses.filter(e=>e.date===today).reduce((s,e)=>s+e.amount,0);
+    const msg=`📊 今日总结\n━━━━━━\n💧 饮水：${waterCups}/8 杯\n💸 支出：¥${todayExps}\n📋 待办完成：${done}/${total}\n━━━━━━\n明天继续加油 ✨`;
+    alert(msg);
+}
+
+// ── Init ──
+document.getElementById('todayDate').textContent=new Date().toLocaleDateString('zh-CN',{weekday:'long',month:'long',day:'numeric'});
+updateWeather();updateHome();renderExpenses();renderWater();renderTodos();
+</script>
+</body>
+</html>
