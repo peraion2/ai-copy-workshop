@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a14">
+    <title>💰 攒钱鸭 — 年轻人的存钱搭子</title>
+    <style>
+        :root{--bg:#07070f;--card:rgba(255,255,255,0.03);--accent:#818cf8;--g:#10b981;--r:#f43f5e;--y:#f59e0b;--pink:#ec4899;--t:#e8e8f0;--t2:rgba(255,255,255,0.38);--t3:rgba(255,255,255,0.15)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;max-width:480px;margin:0 auto;padding:0 0 100px;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+        /* header */
+        .hdr{display:flex;align-items:center;justify-content:space-between;padding:16px}
+        .hdr .hi{display:flex;align-items:center;gap:8px}
+        .hdr .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#818cf8,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:18px}
+        .hdr .greet{font-size:12px;color:var(--t2)}
+        .hdr .name{font-size:16px;font-weight:700}
+        .hdr .bell{font-size:20px;padding:6px;cursor:pointer}
+        /* goal card - hero */
+        .goal-card{margin:0 16px;background:linear-gradient(135deg,#1e1b4b,#312e81,#3730a3);border-radius:20px;padding:22px;position:relative;overflow:hidden}
+        .goal-card::after{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:rgba(255,255,255,0.03);border-radius:50%}
+        .goal-card .goal-label{font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:2px;margin-bottom:4px}
+        .goal-card .goal-title{font-size:20px;font-weight:800;margin-bottom:12px}
+        .goal-card .goal-bar{height:8px;background:rgba(255,255,255,0.1);border-radius:4px;margin-bottom:8px;overflow:hidden}
+        .goal-card .goal-bar .fill{height:100%;background:linear-gradient(90deg,#818cf8,#a78bfa);border-radius:4px;transition:width 0.6s ease}
+        .goal-card .goal-meta{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,0.5)}
+        .goal-card .goal-meta b{color:#fff}
+        .goal-card .goal-emoji{position:absolute;right:18px;top:18px;font-size:40px;opacity:0.8}
+        /* quick actions */
+        .quick-actions{display:flex;gap:10px;padding:16px}
+        .qbtn{flex:1;padding:14px 10px;border-radius:14px;border:1px solid var(--t3);background:var(--card);color:var(--t);cursor:pointer;text-align:center;font-size:13px;font-weight:600;transition:all 0.2s;position:relative;overflow:hidden}
+        .qbtn:active{transform:scale(0.96)}
+        .qbtn .qicon{font-size:24px;display:block;margin-bottom:4px}
+        .qbtn.add{background:var(--accent);border:none;color:#fff}
+        /* month strip */
+        .month-strip{margin:0 16px;padding:14px 16px;background:var(--card);border-radius:14px;border:1px solid var(--t3);display:flex;justify-content:space-around;text-align:center}
+        .month-strip .ms .ms-val{font-size:18px;font-weight:800}
+        .month-strip .ms .ms-lbl{font-size:10px;color:var(--t2);margin-top:2px}
+        .ms-val.green{color:var(--g)}.ms-val.red{color:var(--r)}.ms-val.gold{color:var(--y)}
+        /* section */
+        .section{margin:16px}
+        .section-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+        .section-h h3{font-size:14px;letter-spacing:1px}
+        .section-h span{font-size:11px;color:var(--t2);cursor:pointer}
+        /* expense list */
+        .exp-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border-radius:12px;margin-bottom:6px;border:1px solid rgba(255,255,255,0.03)}
+        .exp-item .cat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+        .cat-icon.food{background:rgba(245,158,11,0.12)}.cat-icon.trans{background:rgba(59,130,246,0.12)}
+        .cat-icon.shop{background:rgba(236,72,153,0.12)}.cat-icon.ent{background:rgba(139,92,246,0.12)}
+        .cat-icon.home{background:rgba(16,185,129,0.12)}.cat-icon.other{background:rgba(255,255,255,0.06)}
+        .exp-item .info{flex:1}
+        .exp-item .info .n{font-size:13px}
+        .exp-item .info .d{font-size:10px;color:var(--t2)}
+        .exp-item .amt{font-weight:700;font-size:15px;color:var(--r)}
+        /* insight card */
+        .insight{background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.1);border-radius:14px;padding:14px 16px;margin:0 16px 16px;display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.6;color:rgba(255,255,255,0.6)}
+        .insight .bulb{font-size:20px;flex-shrink:0}
+        .insight b{color:var(--y)}
+        /* modal */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99;display:none;align-items:flex-end;justify-content:center}
+        .modal-overlay.show{display:flex}
+        .modal{background:#14141e;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:24px 16px 30px;max-height:75vh;overflow-y:auto}
+        .modal h3{text-align:center;font-size:16px;margin-bottom:16px}
+        .modal .close-btn{position:absolute;right:16px;top:16px;background:none;border:none;color:var(--t2);font-size:20px;cursor:pointer}
+        .modal input,.modal select{width:100%;padding:12px;background:rgba(255,255,255,0.03);border:1px solid var(--t3);color:var(--t);border-radius:12px;font-size:15px;font-family:inherit;margin-bottom:10px;outline:none}
+        .modal input:focus,.modal select:focus{border-color:var(--accent)}
+        .modal .btn-row{display:flex;gap:8px}
+        .modal .btn{flex:1;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s}
+        .modal .btn.primary{background:var(--accent);color:#fff}
+        .modal .btn.ghost{background:rgba(255,255,255,0.04);color:var(--t2)}
+        .modal .btn:active{transform:scale(0.97)}
+        /* goal picker */
+        .goal-options{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+        .goal-opt{padding:8px 14px;border-radius:20px;border:1px solid var(--t3);cursor:pointer;font-size:12px;transition:all 0.2s}
+        .goal-opt.on{border-color:var(--accent);background:rgba(129,140,248,0.1);color:var(--accent)}
+        /* celebration */
+        .confetti{position:fixed;pointer-events:none;z-index:200;font-size:24px;animation:confettiFall 2s ease-out forwards}
+        @keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(60vh) rotate(360deg)}}
+        /* streaks */
+        .streak-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:rgba(245,158,11,0.1);border-radius:12px;font-size:10px;color:var(--y);font-weight:600}
+        /* nav */
+        .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(7,7,15,0.96);border-top:1px solid var(--t3);display:flex;padding:6px 0 env(safe-area-inset-bottom,6px);z-index:50;backdrop-filter:blur(20px)}
+        .nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;background:none;border:none;color:var(--t2);font-size:10px;cursor:pointer;transition:all 0.2s}
+        .nav button.on{color:var(--accent)}
+        .nav button .ni{font-size:20px}
+    </style>
+</head>
+<body>
+
+<div class="hdr">
+    <div class="hi">
+        <div class="avatar">🦆</div>
+        <div><div class="greet" id="greeting">下午好</div><div class="name">攒钱搭子</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+        <span class="streak-badge" id="streakBadge">🔥 3天</span>
+        <div class="bell" onclick="showInsightModal()">💡</div>
+    </div>
+</div>
+
+<!-- Goal -->
+<div class="goal-card" id="goalCard">
+    <div class="goal-emoji" id="goalEmoji">✈️</div>
+    <div class="goal-label">🎯 攒钱目标</div>
+    <div class="goal-title" id="goalTitle">旅行基金</div>
+    <div class="goal-bar"><div class="fill" id="goalFill" style="width:35%"></div></div>
+    <div class="goal-meta"><span>已攒 <b id="goalSaved">¥3,500</b></span><span>目标 <b id="goalTarget">¥10,000</b></span></div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <button class="qbtn add" onclick="showAddModal()"><span class="qicon">💸</span>记一笔</button>
+    <button class="qbtn" onclick="showAddModal('income')"><span class="qicon">💰</span>记收入</button>
+    <button class="qbtn" onclick="showGoalModal()"><span class="qicon">🎯</span>设目标</button>
+</div>
+
+<!-- Month Stats -->
+<div class="month-strip">
+    <div class="ms"><div class="ms-val red" id="monthExp">¥2,680</div><div class="ms-lbl">本月支出</div></div>
+    <div class="ms"><div class="ms-val green" id="monthInc">¥5,200</div><div class="ms-lbl">本月收入</div></div>
+    <div class="ms"><div class="ms-val gold" id="monthSave">¥2,520</div><div class="ms-lbl">本月结余</div></div>
+</div>
+
+<!-- Insight -->
+<div class="insight" id="insightBox">
+    <div class="bulb">💡</div>
+    <div id="insightText">这个月外卖花了 <b>¥860</b>，比上月多了 <b>30%</b>。自己做饭的话能省 <b>¥500+</b>，还能顺便学个技能 🍳</div>
+</div>
+
+<!-- Recent Expenses -->
+<div class="section">
+    <div class="section-h"><h3>📋 最近记录</h3><span onclick="showAllExpenses()">全部 ›</span></div>
+    <div id="expenseList"></div>
+</div>
+
+<!-- Nav -->
+<nav class="nav">
+    <button class="on"><span class="ni">🏠</span>首页</button>
+    <button onclick="showAllExpenses()"><span class="ni">📋</span>账单</button>
+    <button onclick="showStats()"><span class="ni">📊</span>分析</button>
+    <button onclick="showGoalModal()"><span class="ni">🎯</span>目标</button>
+</nav>
+
+<script>
+// ── State ──
+let expenses=JSON.parse(localStorage.getItem('saveup_expenses')||'[]');
+let goal=JSON.parse(localStorage.getItem('saveup_goal')||'{"name":"旅行基金","target":10000,"emoji":"✈️"}');
+let incomes=JSON.parse(localStorage.getItem('saveup_incomes')||'[]');
+let streak=parseInt(localStorage.getItem('saveup_streak')||'0');
+
+const CATS={food:'🍜 餐饮',trans:'🚇 交通',shop:'🛍 购物',ent:'🎮 娱乐',home:'🏠 居家',other:'📌 其他'};
+const CAT_ICON={food:'food',trans:'trans',shop:'shop',ent:'ent',home:'home',other:'other'};
+
+function save(){localStorage.setItem('saveup_expenses',JSON.stringify(expenses));localStorage.setItem('saveup_incomes',JSON.stringify(incomes));renderAll()}
+function saveGoal(){localStorage.setItem('saveup_goal',JSON.stringify(goal));renderAll()}
+
+function getMonthData(){
+    const now=new Date();const m=now.toISOString().slice(0,7);
+    const ex=expenses.filter(e=>e.date.startsWith(m)).reduce((s,e)=>s+e.amount,0);
+    const inc=incomes.filter(e=>e.date.startsWith(m)).reduce((s,e)=>s+e.amount,0);
+    return{exp:ex,inc:inc,save:inc-ex};
+}
+function getGoalSaved(){return incomes.reduce((s,e)=>s+e.amount,0)-expenses.reduce((s,e)=>s+e.amount,0)||0}
+
+// ── Render ──
+function renderAll(){
+    const md=getMonthData();
+    const saved=getGoalSaved();
+    const pct=Math.min(100,Math.round(saved/goal.target*100));
+
+    // Greeting
+    const h=new Date().getHours();
+    document.getElementById('greeting').textContent=h<12?'早上好':h<18?'下午好':'晚上好';
+
+    // Streak
+    const today=new Date().toISOString().slice(0,10);
+    const loggedToday=expenses.some(e=>e.date===today)||incomes.some(e=>e.date===today);
+    if(loggedToday&&!localStorage.getItem('saveup_lastStreakDate')!==today){
+        localStorage.setItem('saveup_lastStreakDate',today);
+        streak++;localStorage.setItem('saveup_streak',streak);
+    }
+    document.getElementById('streakBadge').textContent='🔥 '+streak+'天';
+
+    // Goal
+    document.getElementById('goalEmoji').textContent=goal.emoji;
+    document.getElementById('goalTitle').textContent=goal.name;
+    document.getElementById('goalFill').style.width=pct+'%';
+    document.getElementById('goalSaved').textContent='¥'+saved.toLocaleString();
+    document.getElementById('goalTarget').textContent='¥'+goal.target.toLocaleString();
+
+    // Month
+    document.getElementById('monthExp').textContent='¥'+md.exp.toLocaleString();
+    document.getElementById('monthInc').textContent='¥'+md.inc.toLocaleString();
+    document.getElementById('monthSave').textContent='¥'+md.save.toLocaleString();
+
+    // Insight
+    updateInsight(md);
+
+    // Recent expenses
+    const recent=[...expenses].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+    const el=document.getElementById('expenseList');
+    if(!recent.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2);font-size:13px">还没有记录，点「记一笔」开始攒钱吧 🦆</div>';return}
+    el.innerHTML=recent.map(e=>`
+        <div class="exp-item">
+            <div class="cat-icon ${CAT_ICON[e.cat]||'other'}">${(CATS[e.cat]||'📌').slice(0,2)}</div>
+            <div class="info"><div class="n">${e.note||CATS[e.cat]}</div><div class="d">${e.date} · ${CATS[e.cat]}</div></div>
+            <div class="amt">-¥${e.amount.toLocaleString()}</div>
+        </div>
+    `).join('');
+}
+
+function updateInsight(md){
+    const food=expenses.filter(e=>e.cat==='food'&&e.date.startsWith(new Date().toISOString().slice(0,7))).reduce((s,e)=>s+e.amount,0);
+    const tips=[
+        `这个月餐饮花了 <b>¥${food.toLocaleString()}</b>。自己做一顿饭成本不到 15 块，比外卖省一半不止 🍳`,
+        `已连续记账 <b>${streak} 天</b>🔥 研究表明连续记账 21 天的人月支出平均降低 18%。`,
+        `本月结余 <b>¥${md.save.toLocaleString()}</b>，离「${goal.name}」还差 <b>¥${Math.max(0,goal.target-getGoalSaved()).toLocaleString()}</b>，保持节奏 ✨`,
+        `试试「50-30-20 法则」：收入的 50% 必要支出、30% 想要、20% 强制储蓄 💡`,
+        food>800?`外卖占比有点高哦。这周尝试带 3 天饭，一个月能多攒 <b>¥400+</b> 🍱`:`餐饮控制得不错！继续保持 👍`,
+    ];
+    const tip=tips[Math.floor(Math.random()*tips.length)];
+    document.getElementById('insightText').innerHTML=tip;
+}
+
+// ── Actions ──
+function showAddModal(type){
+    const overlay=document.createElement('div');
+    overlay.className='modal-overlay show';
+    overlay.onclick=function(e){if(e.target===this)this.remove()};
+    const isIncome=type==='income';
+    overlay.innerHTML=`
+        <div class="modal">
+            <h3>${isIncome?'💰 记收入':'💸 记支出'}</h3>
+            <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">✕</button>
+            <input type="number" id="addAmount" placeholder="金额" style="font-size:28px;font-weight:700;text-align:center">
+            ${isIncome?'':'<select id="addCat">'+Object.entries(CATS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')+'</select>'}
+            <input type="text" id="addNote" placeholder="备注（可选）" maxlength="20">
+            <div class="btn-row">
+                <button class="btn ghost" onclick="this.closest('.modal-overlay').remove()">取消</button>
+                <button class="btn primary" onclick="submitAdd('${isIncome}')">✓ 确认</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    setTimeout(()=>document.getElementById('addAmount').focus(),300);
+}
+
+function submitAdd(isIncome){
+    const amount=parseFloat(document.getElementById('addAmount').value);
+    if(!amount||amount<=0)return;
+    const note=document.getElementById('addNote')?.value.trim()||'';
+    const cat=isIncome?'income':(document.getElementById('addCat')?.value||'other');
+    const today=new Date().toISOString().slice(0,10);
+
+    if(isIncome){incomes.unshift({amount,note,date:today})}
+    else{expenses.unshift({amount,note,cat,date:today})}
+
+    document.querySelector('.modal-overlay')?.remove();
+    save();
+    maybeCelebrate();
+}
+
+function showGoalModal(){
+    const overlay=document.createElement('div');
+    overlay.className='modal-overlay show';
+    overlay.onclick=function(e){if(e.target===this)this.remove()};
+    const goals=[{name:'旅行基金',emoji:'✈️'},{name:'新手机',emoji:'📱'},{name:'学车',emoji:'🚗'},{name:'房租押金',emoji:'🏠'},{name:'健身年卡',emoji:'💪'},{name:'小金库',emoji:'🏦'}];
+    overlay.innerHTML=`
+        <div class="modal">
+            <h3>🎯 设定攒钱目标</h3>
+            <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">✕</button>
+            <div class="goal-options" id="goalOpts">
+                ${goals.map((g,i)=>`<div class="goal-opt${goal.name===g.name?' on':''}" onclick="pickGoal(this,'${g.name}','${g.emoji}')">${g.emoji} ${g.name}</div>`).join('')}
+            </div>
+            <input type="number" id="goalAmount" placeholder="目标金额" value="${goal.target}">
+            <div class="btn-row">
+                <button class="btn ghost" onclick="this.closest('.modal-overlay').remove()">取消</button>
+                <button class="btn primary" onclick="submitGoal()">✓ 保存目标</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+function pickGoal(el,name,emoji){document.querySelectorAll('.goal-opt').forEach(g=>g.classList.remove('on'));el.classList.add('on');window._pickedGoal={name,emoji}}
+function submitGoal(){
+    const amount=parseFloat(document.getElementById('goalAmount').value);
+    if(!amount||amount<=0)return;
+    if(window._pickedGoal){goal.name=window._pickedGoal.name;goal.emoji=window._pickedGoal.emoji}
+    goal.target=amount;
+    document.querySelector('.modal-overlay')?.remove();
+    saveGoal();
+}
+
+function showAllExpenses(){
+    const all=[...expenses].sort((a,b)=>b.date.localeCompare(a.date));
+    const html=all.length?all.map(e=>`
+        <div class="exp-item">
+            <div class="cat-icon ${CAT_ICON[e.cat]||'other'}">${(CATS[e.cat]||'📌').slice(0,2)}</div>
+            <div class="info"><div class="n">${e.note||CATS[e.cat]}</div><div class="d">${e.date}</div></div>
+            <div class="amt">-¥${e.amount.toLocaleString()}</div>
+        </div>
+    `).join(''):'<div style="text-align:center;padding:40px;color:var(--t2)">还没有支出记录</div>';
+
+    const overlay=document.createElement('div');
+    overlay.className='modal-overlay show';
+    overlay.onclick=function(e){if(e.target===this)this.remove()};
+    overlay.innerHTML=`<div class="modal"><h3>📋 全部账单</h3><button class="close-btn" onclick="this.closest('.modal-overlay').remove()">✕</button>${html}</div>`;
+    document.body.appendChild(overlay);
+}
+
+function showStats(){
+    const md=getMonthData();
+    const byCat={};expenses.forEach(e=>{if(e.date.startsWith(new Date().toISOString().slice(0,7))){byCat[e.cat]=(byCat[e.cat]||0)+e.amount}});
+    const max=Math.max(1,...Object.values(byCat));
+    const bars=Object.entries(CATS).map(([k,v])=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="width:60px;font-size:12px">${v}</span>
+            <div style="flex:1;height:8px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden">
+                <div style="height:100%;width:${(byCat[k]||0)/max*100}%;background:linear-gradient(90deg,#818cf8,#a78bfa);border-radius:4px"></div>
+            </div>
+            <span style="font-size:12px;min-width:50px;text-align:right">¥${(byCat[k]||0).toLocaleString()}</span>
+        </div>
+    `).join('');
+
+    const overlay=document.createElement('div');
+    overlay.className='modal-overlay show';
+    overlay.onclick=function(e){if(e.target===this)this.remove()};
+    overlay.innerHTML=`
+        <div class="modal">
+            <h3>📊 本月分析</h3><button class="close-btn" onclick="this.closest('.modal-overlay').remove()">✕</button>
+            <div style="margin-bottom:16px">${bars}</div>
+            <div style="text-align:center;font-size:13px;color:var(--t2)">总收入 ¥${md.inc.toLocaleString()} | 总支出 ¥${md.exp.toLocaleString()} | 结余率 ${md.inc?Math.round(md.save/md.inc*100):0}%</div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+
+function showInsightModal(){
+    const md=getMonthData();
+    updateInsight(md);
+    const overlay=document.createElement('div');
+    overlay.className='modal-overlay show';
+    overlay.onclick=function(e){if(e.target===this)this.remove()};
+    overlay.innerHTML=`<div class="modal"><h3>💡 攒钱建议</h3><button class="close-btn" onclick="this.closest('.modal-overlay').remove()">✕</button><div style="font-size:14px;line-height:1.8;color:var(--t2)">${document.getElementById('insightText').innerHTML}</div></div>`;
+    document.body.appendChild(overlay);
+}
+
+function maybeCelebrate(){
+    const saved=getGoalSaved();
+    if(saved>=goal.target&&goal.target>0){
+        for(let i=0;i<30;i++){
+            const el=document.createElement('div');
+            el.className='confetti';
+            el.textContent=['🎉','✨','💸','🦆','💰','🌟','🎊'][Math.floor(Math.random()*7)];
+            el.style.left=Math.random()*100+'%';
+            el.style.top=-(Math.random()*20)+'%';
+            el.style.animationDuration=(1.5+Math.random()*2)+'s';
+            el.style.animationDelay=Math.random()*1+'s';
+            document.body.appendChild(el);
+            setTimeout(()=>el.remove(),3000);
+        }
+        setTimeout(()=>alert('🎉 恭喜！你达成了「'+goal.name+'」的目标！太厉害了 🦆'),500);
+    }
+}
+
+// ── Init ──
+renderAll();
+</script>
+</body>
+</html>
