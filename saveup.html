@@ -85,6 +85,27 @@
         .nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;background:none;border:none;color:var(--t2);font-size:10px;cursor:pointer;transition:all 0.2s}
         .nav button.on{color:var(--accent)}
         .nav button .ni{font-size:20px}
+        /* voice btn */
+        .voice-btn{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#f43f5e,#ec4899);border:none;color:#fff;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;box-shadow:0 4px 20px rgba(244,63,94,0.3)}
+        .voice-btn:active{transform:scale(0.9)}.voice-btn.listening{animation:voicePulse 1s infinite;background:linear-gradient(135deg,#ef4444,#dc2626)}
+        @keyframes voicePulse{0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,0.4)}50%{box-shadow:0 0 0 20px rgba(244,63,94,0)}}
+        .voice-tip{text-align:center;font-size:11px;color:var(--t2);margin-top:8px}
+        /* calc row */
+        .calc-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+        .calc-row button{flex:1;min-width:50px;padding:8px 4px;background:rgba(255,255,255,0.04);border:1px solid var(--t3);color:var(--t);border-radius:8px;cursor:pointer;font-size:13px;transition:all 0.2s}
+        .calc-row button:active{background:rgba(255,255,255,0.1)}
+        /* clipboard monitor */
+        .clip-monitor{margin:0 16px 12px;padding:12px 14px;background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.1);border-radius:14px;display:none;align-items:center;gap:10px;font-size:12px;animation:fadeIn 0.3s ease;cursor:pointer}
+        .clip-monitor.show{display:flex}
+        .clip-monitor .clip-icon{font-size:20px;flex-shrink:0}
+        .clip-monitor .clip-info{flex:1;min-width:0}
+        .clip-monitor .clip-info .clip-amount{font-weight:700;color:var(--r)}
+        .clip-monitor .clip-info .clip-src{font-size:10px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .clip-monitor .clip-btn{padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
+        .clip-monitor .clip-dismiss{background:none;border:none;color:var(--t2);font-size:16px;cursor:pointer;padding:4px}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+        /* Calc display */
+        .calc-display{text-align:right;font-size:13px;color:var(--t2);margin-bottom:4px;min-height:20px}
     </style>
 </head>
 <body>
@@ -109,12 +130,25 @@
     <div class="goal-meta"><span>已攒 <b id="goalSaved">¥3,500</b></span><span>目标 <b id="goalTarget">¥10,000</b></span></div>
 </div>
 
+<!-- Clipboard Monitor -->
+<div class="clip-monitor" id="clipMonitor" onclick="confirmClipExpense()">
+    <div class="clip-icon">📋</div>
+    <div class="clip-info">
+        <div>检测到一笔消费</div>
+        <div class="clip-amount" id="clipAmount">¥0</div>
+        <div class="clip-src" id="clipSrc"></div>
+    </div>
+    <button class="clip-btn">记一笔</button>
+    <button class="clip-dismiss" onclick="event.stopPropagation();dismissClip()">✕</button>
+</div>
+
 <!-- Quick Actions -->
 <div class="quick-actions">
     <button class="qbtn add" onclick="showAddModal()"><span class="qicon">💸</span>记一笔</button>
-    <button class="qbtn" onclick="showAddModal('income')"><span class="qicon">💰</span>记收入</button>
+    <button class="qbtn" onclick="startVoiceInput()" id="voiceBtn"><span class="qicon">🎤</span>语音记</button>
     <button class="qbtn" onclick="showGoalModal()"><span class="qicon">🎯</span>设目标</button>
 </div>
+<div class="voice-tip" id="voiceTip" style="display:none">正在听你说话… 说出金额和用途</div>
 
 <!-- Month Stats -->
 <div class="month-strip">
@@ -225,7 +259,7 @@ function updateInsight(md){
 }
 
 // ── Actions ──
-function showAddModal(type){
+function showAddModal(type,prefillAmount,prefillNote){
     const overlay=document.createElement('div');
     overlay.className='modal-overlay show';
     overlay.onclick=function(e){if(e.target===this)this.remove()};
@@ -234,9 +268,19 @@ function showAddModal(type){
         <div class="modal">
             <h3>${isIncome?'💰 记收入':'💸 记支出'}</h3>
             <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">✕</button>
-            <input type="number" id="addAmount" placeholder="金额" style="font-size:28px;font-weight:700;text-align:center">
+            <div class="calc-display" id="calcDisplay"></div>
+            <input type="text" id="addAmount" placeholder="金额（可直接算：30+15+22）" style="font-size:28px;font-weight:700;text-align:center" value="${prefillAmount||''}" inputmode="decimal">
+            <div class="calc-row">
+                <button onclick="calcAppend('1')">1</button><button onclick="calcAppend('2')">2</button><button onclick="calcAppend('3')">3</button><button onclick="calcAppend('+')" style="color:var(--accent)">+</button>
+                <button onclick="calcAppend('4')">4</button><button onclick="calcAppend('5')">5</button><button onclick="calcAppend('6')">6</button><button onclick="calcAppend('-')" style="color:var(--accent)">−</button>
+                <button onclick="calcAppend('7')">7</button><button onclick="calcAppend('8')">8</button><button onclick="calcAppend('9')">9</button><button onclick="calcAppend('*')" style="color:var(--accent)">×</button>
+                <button onclick="calcAppend('0')">0</button><button onclick="calcAppend('.')">.</button><button onclick="calcClear()" style="color:var(--r)">C</button><button onclick="calcResult()" style="background:var(--accent);color:#fff;border:none">=</button>
+            </div>
             ${isIncome?'':'<select id="addCat">'+Object.entries(CATS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')+'</select>'}
-            <input type="text" id="addNote" placeholder="备注（可选）" maxlength="20">
+            <input type="text" id="addNote" placeholder="备注（可选）" maxlength="20" value="${prefillNote||''}">
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+                <button class="btn" style="flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--t3);color:var(--t);border-radius:12px;font-size:12px;cursor:pointer;padding:10px" onclick="startVoiceInputInModal()">🎤 语音输入</button>
+            </div>
             <div class="btn-row">
                 <button class="btn ghost" onclick="this.closest('.modal-overlay').remove()">取消</button>
                 <button class="btn primary" onclick="submitAdd('${isIncome}')">✓ 确认</button>
@@ -248,7 +292,11 @@ function showAddModal(type){
 }
 
 function submitAdd(isIncome){
-    const amount=parseFloat(document.getElementById('addAmount').value);
+    let raw=document.getElementById('addAmount').value.trim();
+    // auto-calculate if expression
+    try{if(raw.match(/[+\-*/]/)){raw=Function('"use strict";return ('+raw+')')();raw=Number.isFinite(raw)?parseFloat(raw.toFixed(2)):0}}
+    catch(e){raw=0}
+    const amount=parseFloat(raw);
     if(!amount||amount<=0)return;
     const note=document.getElementById('addNote')?.value.trim()||'';
     const cat=isIncome?'income':(document.getElementById('addCat')?.value||'other');
@@ -364,6 +412,129 @@ function maybeCelebrate(){
         setTimeout(()=>alert('🎉 恭喜！你达成了「'+goal.name+'」的目标！太厉害了 🦆'),500);
     }
 }
+
+// ── Calculator ──
+function calcAppend(ch){
+    const inp=document.getElementById('addAmount');if(!inp)return;
+    const start=inp.selectionStart,end=inp.selectionEnd;
+    const v=inp.value;inp.value=v.slice(0,start)+ch+v.slice(end);
+    inp.setSelectionRange(start+1,start+1);inp.focus();
+}
+function calcClear(){const inp=document.getElementById('addAmount');if(inp)inp.value='';}
+function calcResult(){
+    const inp=document.getElementById('addAmount');if(!inp)return;
+    try{const r=Function('"use strict";return ('+inp.value+')')();inp.value=Number.isFinite(r)?parseFloat(r.toFixed(2)):inp.value}catch(e){}
+}
+
+// ── Voice Input ──
+let recognition=null;
+function getRecognition(){
+    if(recognition)return recognition;
+    const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SpeechRecognition){toast('⚠️ 你的浏览器不支持语音，试试用 Safari 或 Chrome');return null}
+    recognition=new SpeechRecognition();
+    recognition.lang='zh-CN';recognition.interimResults=false;recognition.maxAlternatives=1;
+    return recognition;
+}
+function startVoiceInput(){
+    const rec=getRecognition();if(!rec)return;
+    document.getElementById('voiceTip').style.display='block';
+    document.getElementById('voiceBtn').classList.add('listening');
+    rec.onresult=function(e){
+        const text=e.results[0][0].transcript;
+        document.getElementById('voiceTip').style.display='none';
+        document.getElementById('voiceBtn').classList.remove('listening');
+        parseVoiceText(text);
+    };
+    rec.onerror=function(){
+        document.getElementById('voiceTip').style.display='none';
+        document.getElementById('voiceBtn').classList.remove('listening');
+        toast('🎤 没听清，再说一次？');
+    };
+    rec.start();
+}
+function startVoiceInputInModal(){
+    const rec=getRecognition();if(!rec)return;
+    toast('🎤 正在听…说出金额和用途');
+    rec.onresult=function(e){
+        const text=e.results[0][0].transcript;
+        const result=parseVoiceText(text);
+        if(result){
+            const amt=document.getElementById('addAmount');if(amt)amt.value=result.amount;
+            const cat=document.getElementById('addCat');if(cat&&result.cat)cat.value=result.cat;
+            const note=document.getElementById('addNote');if(note&&result.note)note.value=result.note;
+        }
+        document.querySelectorAll('.toast-exist').forEach(t=>t.remove());
+    };
+    rec.onerror=function(){toast('🎤 没听清，再试一次？')};
+    rec.start();
+}
+function parseVoiceText(text){
+    // Parse Chinese voice input like "午餐花了35块" or "买咖啡15元"
+    const amountMatch=text.match(/(\d+(?:\.\d+)?)\s*[块元]/);
+    if(!amountMatch){toast('🎤 听到了：'+text+' | 但没识别到金额，请说"XX花了多少块"');return null}
+    const amount=parseFloat(amountMatch[1]);
+    // Category detection
+    const catMap={饭:'food',餐:'food',吃:'food',喝:'food',外卖:'food',奶茶:'food',咖啡:'food',
+        地铁:'trans',公交:'trans',打车:'trans',车:'trans',高铁:'trans',机票:'trans',
+        买:'shop',衣服:'shop',鞋:'shop',包:'shop',化妆品:'shop',手机:'shop',电脑:'shop',
+        电影:'ent',游戏:'ent',唱:'ent',玩:'ent',旅游:'ent',票:'ent',
+        房租:'home',电费:'home',水费:'home',物业:'home',网费:'home',话费:'home','缴':'home'};
+    let cat='other';
+    for(const [keyword,c] of Object.entries(catMap)){if(text.includes(keyword)){cat=c;break}}
+    const note=text.replace(amountMatch[0],'').replace(/[了哦啊呀的]/g,'').trim().slice(0,15)||'语音记录';
+    toast('✅ 识别：'+note+' ¥'+amount);
+    return{amount,cat,note};
+}
+
+// ── Clipboard Monitor ──
+let lastClipText='';
+function checkClipboard(){
+    if(!navigator.clipboard?.readText)return;
+    navigator.clipboard.readText().then(text=>{
+        if(!text||text===lastClipText||text.length>200)return;
+        lastClipText=text;
+        const parsed=parseTransaction(text);
+        if(parsed){
+            window._clipExpense=parsed;
+            document.getElementById('clipAmount').textContent='¥'+parsed.amount;
+            document.getElementById('clipSrc').textContent=parsed.source;
+            document.getElementById('clipMonitor').classList.add('show');
+        }
+    }).catch(()=>{});
+}
+function parseTransaction(text){
+    // SMS/Bank/WeChat/Alipay transaction patterns
+    const patterns=[
+        // Bank SMS: "您的借记卡消费人民币50.00元" "尾号1234消费50元"
+        /消费.*?(\d+(?:\.\d{1,2})?)\s*元/,/支出.*?(\d+(?:\.\d{1,2})?)\s*元/,
+        /扣款.*?(\d+(?:\.\d{1,2})?)\s*元/,/付款.*?(\d+(?:\.\d{1,2})?)\s*元/,
+        // WeChat: "微信支付50.00元" "向商户付款50元"
+        /微信支付\s*(\d+(?:\.\d{1,2})?)\s*元/,/付款金额.*?(\d+(?:\.\d{1,2})?)/,
+        // Alipay: "支付宝消费50元" "成功支付50.00元"
+        /支付宝.*?(\d+(?:\.\d{1,2})?)\s*元/,/成功支付\s*(\d+(?:\.\d{1,2})?)\s*元/,
+        /支付\s*¥?\s*(\d+(?:\.\d{1,2})?)/,
+        // Generic
+        /¥\s*(\d+(?:\.\d{1,2})?)/,/(\d+(?:\.\d{1,2})?)\s*元\s*(?:消费|支出|付款)/,
+    ];
+    for(const p of patterns){
+        const m=text.match(p);if(m){return{amount:parseFloat(m[1]),source:text.slice(0,80)}}
+    }
+    return null;
+}
+function confirmClipExpense(){
+    if(!window._clipExpense)return;
+    const p=window._clipExpense;
+    expenses.unshift({amount:p.amount,note:'自动识别',cat:'other',date:new Date().toISOString().slice(0,10)});
+    dismissClip();save();toast('✅ 已记录 ¥'+p.amount);
+}
+function dismissClip(){
+    document.getElementById('clipMonitor').classList.remove('show');
+    window._clipExpense=null;
+}
+
+// periodic clipboard check
+setInterval(checkClipboard,5000);
 
 // ── Init ──
 renderAll();
