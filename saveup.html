@@ -130,23 +130,23 @@
     <div class="goal-meta"><span>已攒 <b id="goalSaved">¥3,500</b></span><span>目标 <b id="goalTarget">¥10,000</b></span></div>
 </div>
 
-<!-- Clipboard Monitor -->
+<!-- Clipboard Monitor Banner -->
 <div class="clip-monitor" id="clipMonitor" onclick="confirmClipExpense()">
     <div class="clip-icon">📋</div>
     <div class="clip-info">
-        <div>检测到一笔消费</div>
+        <div>检测到一笔账</div>
         <div class="clip-amount" id="clipAmount">¥0</div>
         <div class="clip-src" id="clipSrc"></div>
     </div>
-    <button class="clip-btn">记一笔</button>
+    <button class="clip-btn" id="clipBtnLabel">记一笔</button>
     <button class="clip-dismiss" onclick="event.stopPropagation();dismissClip()">✕</button>
 </div>
 
 <!-- Quick Actions -->
 <div class="quick-actions">
-    <button class="qbtn add" onclick="showAddModal()"><span class="qicon">💸</span>记一笔</button>
+    <button class="qbtn add" onclick="showAddModal()"><span class="qicon">💸</span>记支出</button>
+    <button class="qbtn" onclick="quickDetect()"><span class="qicon">📋</span>一键识别</button>
     <button class="qbtn" onclick="startVoiceInput()" id="voiceBtn"><span class="qicon">🎤</span>语音记</button>
-    <button class="qbtn" onclick="showGoalModal()"><span class="qicon">🎯</span>设目标</button>
 </div>
 <div class="voice-tip" id="voiceTip" style="display:none">正在听你说话… 说出金额和用途</div>
 
@@ -492,48 +492,72 @@ let lastClipText='';
 function checkClipboard(){
     if(!navigator.clipboard?.readText)return;
     navigator.clipboard.readText().then(text=>{
-        if(!text||text===lastClipText||text.length>200)return;
+        if(!text||text===lastClipText||text.length>250)return;
         lastClipText=text;
         const parsed=parseTransaction(text);
         if(parsed){
             window._clipExpense=parsed;
-            document.getElementById('clipAmount').textContent='¥'+parsed.amount;
+            document.getElementById('clipAmount').textContent=(parsed.type==='income'?'+':'−')+'¥'+parsed.amount;
             document.getElementById('clipSrc').textContent=parsed.source;
+            document.getElementById('clipBtnLabel').textContent=parsed.type==='income'?'记收入':'记支出';
             document.getElementById('clipMonitor').classList.add('show');
         }
     }).catch(()=>{});
 }
+function quickDetect(){
+    if(!navigator.clipboard?.readText){toast('请先复制一条银行/微信/支付宝的扣款或到账短信');return}
+    navigator.clipboard.readText().then(text=>{
+        if(!text){toast('剪贴板是空的，先复制一条扣款或到账通知');return}
+        lastClipText=text;
+        const parsed=parseTransaction(text);
+        if(!parsed){toast('没识别到金额，请复制包含金额的短信');return}
+        if(parsed.type==='income'){incomes.unshift({amount:parsed.amount,note:parsed.source.slice(0,18),date:new Date().toISOString().slice(0,10)})}
+        else{expenses.unshift({amount:parsed.amount,note:parsed.source.slice(0,18),cat:'other',date:new Date().toISOString().slice(0,10)})}
+        window._lastAuto=parsed.type;save();
+        toast((parsed.type==='income'?'💰 收入':'💸 支出')+' ¥'+parsed.amount+' 已自动记录 ✓');
+    }).catch(()=>toast('无法读取剪贴板，请手动记账'));
+}
+function undoLast(){
+    if(window._lastAuto==='income'){incomes.shift()}
+    else{expenses.shift()}
+    save();toast('已撤销 ↩');
+}
+
 function parseTransaction(text){
-    // SMS/Bank/WeChat/Alipay transaction patterns
-    const patterns=[
-        // Bank SMS: "您的借记卡消费人民币50.00元" "尾号1234消费50元"
+    // Income patterns
+    const incPatterns=[
+        /收到.*?(\d+(?:\.\d{1,2})?)\s*元/,/到账.*?(\d+(?:\.\d{1,2})?)\s*元/,
+        /入账.*?(\d+(?:\.\d{1,2})?)\s*元/,/转入.*?(\d+(?:\.\d{1,2})?)\s*元/,
+        /工资.*?(\d+(?:\.\d{1,2})?)/,/(\d+(?:\.\d{1,2})?)\s*元.*?工资/,
+        /红包.*?(\d+(?:\.\d{1,2})?)\s*元/,/收款.*?(\d+(?:\.\d{1,2})?)\s*元/,
+        /存入.*?(\d+(?:\.\d{1,2})?)\s*元/,
+    ];
+    for(const p of incPatterns){const m=text.match(p);if(m)return{amount:parseFloat(m[1]),source:text.slice(0,60),type:'income'}}
+
+    // Expense patterns
+    const expPatterns=[
         /消费.*?(\d+(?:\.\d{1,2})?)\s*元/,/支出.*?(\d+(?:\.\d{1,2})?)\s*元/,
         /扣款.*?(\d+(?:\.\d{1,2})?)\s*元/,/付款.*?(\d+(?:\.\d{1,2})?)\s*元/,
-        // WeChat: "微信支付50.00元" "向商户付款50元"
-        /微信支付\s*(\d+(?:\.\d{1,2})?)\s*元/,/付款金额.*?(\d+(?:\.\d{1,2})?)/,
-        // Alipay: "支付宝消费50元" "成功支付50.00元"
-        /支付宝.*?(\d+(?:\.\d{1,2})?)\s*元/,/成功支付\s*(\d+(?:\.\d{1,2})?)\s*元/,
-        /支付\s*¥?\s*(\d+(?:\.\d{1,2})?)/,
-        // Generic
-        /¥\s*(\d+(?:\.\d{1,2})?)/,/(\d+(?:\.\d{1,2})?)\s*元\s*(?:消费|支出|付款)/,
+        /微信支付\s*(\d+(?:\.\d{1,2})?)\s*元/,/支付宝.*?(\d+(?:\.\d{1,2})?)\s*元/,
+        /成功支付\s*(\d+(?:\.\d{1,2})?)\s*元/,/支付\s*¥?\s*(\d+(?:\.\d{1,2})?)/,
+        /¥\s*(\d+(?:\.\d{1,2})?)/,
     ];
-    for(const p of patterns){
-        const m=text.match(p);if(m){return{amount:parseFloat(m[1]),source:text.slice(0,80)}}
-    }
+    for(const p of expPatterns){const m=text.match(p);if(m)return{amount:parseFloat(m[1]),source:text.slice(0,60),type:'expense'}}
     return null;
 }
 function confirmClipExpense(){
     if(!window._clipExpense)return;
     const p=window._clipExpense;
-    expenses.unshift({amount:p.amount,note:'自动识别',cat:'other',date:new Date().toISOString().slice(0,10)});
-    dismissClip();save();toast('✅ 已记录 ¥'+p.amount);
+    if(p.type==='income'){incomes.unshift({amount:p.amount,note:p.source.slice(0,18),date:new Date().toISOString().slice(0,10)})}
+    else{expenses.unshift({amount:p.amount,note:p.source.slice(0,18),cat:'other',date:new Date().toISOString().slice(0,10)})}
+    window._lastAuto=p.type;dismissClip();save();
+    toast((p.type==='income'?'💰 收入':'💸 支出')+' ¥'+p.amount+' 已记录 ✓');
 }
 function dismissClip(){
     document.getElementById('clipMonitor').classList.remove('show');
     window._clipExpense=null;
 }
 
-// periodic clipboard check
 setInterval(checkClipboard,5000);
 
 // ── Init ──
