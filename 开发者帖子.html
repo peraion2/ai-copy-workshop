@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 文案工坊 — 开发者帖子 | Build with Gemini XPRIZE</title>
+    <style>
+        :root{--bg:#0a0a14;--card:rgba(255,255,255,0.03);--accent:#8b5cf6;--gold:#f59e0b;--text:#e0e0f0;--text2:rgba(255,255,255,0.5)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);padding:40px 20px;line-height:1.8}
+        .container{max-width:750px;margin:0 auto}
+        .hero{text-align:center;padding:30px 0;background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,0.1),transparent 60%);border-radius:20px;margin-bottom:30px}
+        .hero h1{font-size:28px;letter-spacing:2px;background:linear-gradient(135deg,#c4b5fd,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero .sub{font-size:14px;color:var(--text2);margin-top:8px}
+        .block{background:var(--card);border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:24px;margin-bottom:20px}
+        .block h2{font-size:16px;margin-bottom:14px;letter-spacing:2px;color:var(--accent)}
+        .block p,.block li{font-size:14px;color:var(--text2);margin-bottom:8px}
+        .block ul{padding-left:18px}
+        .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+        .tag{padding:4px 12px;background:rgba(139,92,246,0.12);border-radius:15px;font-size:11px;color:var(--accent)}
+        .footer{text-align:center;color:var(--text2);font-size:13px;padding:20px;line-height:2}
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="hero">
+        <h1>🤖 AI 文案工坊</h1>
+        <p class="sub">AI Copy Workshop · Build with Gemini XPRIZE 2026</p>
+    </div>
+
+    <!-- 团队信息 -->
+    <div class="block">
+        <h2>👤 团队信息</h2>
+        <p><strong>参赛者：</strong>个人独立开发</p>
+        <p><strong>角色：</strong>全栈开发 · 产品设计 · 文案工程 · 营销推广</p>
+        <p><strong>联系方式：</strong>kuq_1217@qq.com</p>
+        <p><strong>GitHub：</strong>github.com/kuq1217/ai-copy-workshop</p>
+        <p><strong>所在地：</strong>中国</p>
+    </div>
+
+    <!-- 使用工具 -->
+    <div class="block">
+        <h2>🛠️ 使用的工具与技术</h2>
+        <div class="tags">
+            <span class="tag">Google Gemini 2.0 Flash API</span>
+            <span class="tag">Google AI Studio</span>
+            <span class="tag">HTML5 / CSS3</span>
+            <span class="tag">JavaScript (Vanilla)</span>
+            <span class="tag">Prompt Engineering</span>
+            <span class="tag">Git & GitHub</span>
+            <span class="tag">VS Code</span>
+            <span class="tag">OBS Studio (录屏)</span>
+        </div>
+        <p style="margin-top:14px">全项目零框架依赖，单文件部署，最小化技术栈以保持产品轻量和高可维护性。</p>
+    </div>
+
+    <!-- 挑战 -->
+    <div class="block">
+        <h2>🚧 遇到的挑战</h2>
+        <ul>
+            <li><strong>Prompt 工程精度：</strong>让 Gemini 生成「不机器、有人味」的中文文案非常困难。经过 50+ 次迭代调试，为每种文案类型设计了专用 prompt 模板，包括角色设定、语气控制、格式约束等。</li>
+            <li><strong>API 调用稳定性：</strong>Gemini API 偶尔返回空响应或超时。实现了前端重试逻辑和友好的错误提示，确保用户体验不中断。</li>
+            <li><strong>隐私与成本平衡：</strong>不想自建后端存储用户数据（成本+隐私风险），最终采用「用户自带 API Key + 浏览器本地存储」的方案，零服务器成本运行。</li>
+            <li><strong>单文件全功能：</strong>把完整的 SaaS 产品压缩到一个 HTML 文件，包含模板选择、参数配置、结果展示、复制分享等功能，在保持代码可维护性的同时做到功能完整。</li>
+        </ul>
+    </div>
+
+    <!-- 学到的知识 -->
+    <div class="block">
+        <h2>📚 学到的知识</h2>
+        <ul>
+            <li>深入理解了 Gemini API 的能力边界和最佳 prompt 设计模式</li>
+            <li>学会了如何在零预算条件下设计商业模式（免费增值 + API 自带密钥）</li>
+            <li>掌握了面向小型商户的 UX 设计——界面必须简单到「看一眼就会用」</li>
+            <li>理解了「用 AI 服务非技术用户」的核心不是炫技，而是把复杂性藏起来</li>
+            <li>单文件应用架构的利弊——简单部署 vs 功能扩展的取舍</li>
+        </ul>
+    </div>
+
+    <!-- 未来计划 -->
+    <div class="block">
+        <h2>🗺️ 未来计划</h2>
+        <ul>
+            <li><strong>短期（1个月内）：</strong>获取 50+ 真实付费用户，验证商业模式。根据用户反馈优化 prompt 和新增模板。</li>
+            <li><strong>中期（3个月）：</strong>接入更多 AI 模型（Claude、GPT-4）提供多模型对比。推出团队版和企业版。</li>
+            <li><strong>长期（6个月）：</strong>扩展到英文、日文、韩文市场。引入 AI Agent 自动优化文案转化率。目标服务 10,000+ 付费用户。</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        Built with ❤️ and ☕ for Build with Gemini XPRIZE Hackathon 2026<br>
+        「让每个小生意都能拥有专业文案团队」
+    </div>
+
+</div>
+</body>
+</html>

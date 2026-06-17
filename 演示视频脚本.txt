@@ -1,0 +1,76 @@
+═══════════════════════════════════
+  🎬 演示视频脚本（1-3 分钟）
+  AI 文案工坊 — Build with Gemini XPRIZE
+═══════════════════════════════════
+
+⏱ 总时长：约 2 分 30 秒
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  第 1 段：问题引入（30秒）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【画面】展示一个空白文档，光标闪烁，旁边是焦虑的小商家
+
+【旁白】
+"Every day, millions of small business owners in China stare at a blank page.
+They need marketing copy — for social media, for e-commerce, for ads.
+But hiring a professional copywriter costs $700 a month.
+And generic AI tools sound... robotic.
+There has to be a better way."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  第 2 段：产品展示（60秒）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【画面】打开 gemini-writer.html，完整演示一次生成流程
+
+【操作】
+1. 选择「小红书文案」模板
+2. 输入：新上市的有机洗发水，温和不伤发，适合敏感头皮
+3. 输入目标受众：25-35岁女性
+4. 选择风格：温暖治愈
+5. 点击「一键生成文案」
+6. Gemini 3 秒返回结果
+7. 展示生成的完整文案
+
+【旁白】
+"This is AI Copy Workshop. Pick from 8 content types, describe your product,
+and Google Gemini generates professional copy — in seconds, not hours.
+No templates. Every response is live AI generation, carefully prompted
+for each scenario."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  第 3 段：技术亮点（30秒）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【画面】展示 Prompt 工程结构、Gemini API 调用日志
+
+【旁白】
+"Under the hood, we use Gemini 2.0 Flash API with custom-engineered prompts
+for each content type. The entire product is a single HTML file — zero
+dependencies, zero server costs. Users bring their own API key, stored
+locally for privacy. It's AI-native, production-ready, and built to scale."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  第 4 段：商业模式 + 结尾（30秒）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【画面】定价页面、真实的用户反馈截图
+
+【旁白】
+"Freemium model — 3 free trials, then ¥29 a month for 100 generations.
+Our target: 80 million small businesses across China who need quality copy
+but can't afford a full-time writer. We're already getting real user feedback
+from freelancers and e-commerce sellers. AI Copy Workshop — professional
+copywriting, made accessible to everyone."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  录制小技巧
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. 用 Windows 自带录屏：Win + G → 捕获 → 开始录制
+2. 或者用 OBS（免费）：obsproject.com
+3. 录的时候画面干净，关掉无关窗口
+4. 旁白可以后期录，也可以边操作边讲
+5. 录完传到 YouTube 或 B站，链接贴到 Devpost
+
+═══════════════════════════════════

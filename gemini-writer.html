@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✍️ AI 文案工坊 — Gemini 驱动 · 一键出稿</title>
+    <style>
+        :root{--bg:#0a0a14;--card:rgba(255,255,255,0.03);--accent:#8b5cf6;--gold:#f59e0b;--green:#10b981;--text:#e0e0f0;--text2:rgba(255,255,255,0.45)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:'PingFang SC','Microsoft YaHei',sans-serif;
+            background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,0.1),transparent 60%),var(--bg);
+            color:var(--text);min-height:100vh;
+        }
+        .app{max-width:800px;margin:0 auto;padding:20px;display:flex;flex-direction:column;gap:20px}
+        header{text-align:center;padding:20px 0 10px}
+        header h1{font-size:28px;letter-spacing:3px;background:linear-gradient(135deg,#c4b5fd,#8b5cf6,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        header .sub{font-size:13px;color:var(--text2);margin-top:6px}
+        .credits-bar{
+            display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;
+            padding:10px 20px;background:var(--card);border:1px solid rgba(255,255,255,0.06);
+            border-radius:30px;font-size:13px;
+        }
+        .credits-bar .num{font-weight:900;color:var(--gold);font-size:18px}
+        .credits-bar .btn-sm{
+            padding:4px 14px;border-radius:15px;border:1px solid rgba(255,255,255,0.15);
+            background:transparent;color:var(--text);cursor:pointer;font-size:11px;transition:all 0.2s;
+        }
+        .credits-bar .btn-sm:hover{border-color:var(--accent)}
+        .template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+        .tpl-card{
+            padding:16px;background:var(--card);border:1px solid rgba(255,255,255,0.05);
+            border-radius:12px;cursor:pointer;text-align:center;transition:all 0.2s;
+        }
+        .tpl-card:hover{border-color:var(--accent);background:rgba(139,92,246,0.06);transform:translateY(-2px)}
+        .tpl-card.active{border-color:var(--accent);background:rgba(139,92,246,0.1)}
+        .tpl-card .icon{font-size:28px;margin-bottom:6px}
+        .tpl-card .lbl{font-size:13px;font-weight:600}
+        .tpl-card .hint{font-size:11px;color:var(--text2);margin-top:2px}
+        .form-area{display:flex;flex-direction:column;gap:12px}
+        .form-area label{font-size:13px;font-weight:600;letter-spacing:1px}
+        .form-area textarea,.form-area input{
+            width:100%;padding:14px 16px;background:var(--card);border:1px solid rgba(255,255,255,0.08);
+            color:var(--text);border-radius:12px;font-size:14px;font-family:inherit;outline:none;resize:vertical;
+        }
+        .form-area textarea:focus,.form-area input:focus{border-color:var(--accent)}
+        .form-area textarea{min-height:100px}
+        .row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        @media(max-width:500px){.row-2{grid-template-columns:1fr}}
+        .btn-generate{
+            width:100%;padding:14px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:white;
+            border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:2px;
+            transition:all 0.3s;box-shadow:0 0 30px rgba(139,92,246,0.3);
+        }
+        .btn-generate:hover{box-shadow:0 0 50px rgba(139,92,246,0.5);transform:translateY(-1px)}
+        .btn-generate:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+        .result-card{
+            background:var(--card);border:1px solid rgba(255,255,255,0.06);
+            border-radius:16px;padding:20px;display:none;
+        }
+        .result-card.show{display:block;animation:fadeIn 0.4s ease}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        .result-card .res-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+        .result-card .res-header .h{font-weight:700;font-size:15px}
+        .result-card .res-body{
+            background:#0f0f1a;border-radius:10px;padding:18px;font-size:14px;
+            line-height:1.8;white-space:pre-wrap;max-height:500px;overflow-y:auto;
+        }
+        .result-card .res-actions{display:flex;gap:8px;margin-top:12px}
+        .btn-copy{
+            padding:8px 18px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+            color:var(--text);border-radius:20px;cursor:pointer;font-size:12px;transition:all 0.2s;
+        }
+        .btn-copy:hover{background:rgba(255,255,255,0.12)}
+        .status-msg{text-align:center;font-size:13px;padding:8px;border-radius:8px;display:none}
+        .status-msg.error{display:block;background:rgba(239,68,68,0.1);color:#f87171}
+        .status-msg.success{display:block;background:rgba(16,185,129,0.1);color:#34d399}
+        .api-setup{
+            background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);
+            border-radius:12px;padding:16px;font-size:13px;text-align:center;
+        }
+        .api-setup input{width:300px;max-width:100%;margin-top:8px}
+        .api-setup .btn-sm{margin-top:8px}
+    </style>
+</head>
+<body>
+<div class="app">
+    <header>
+        <h1>✍️ AI 文案工坊</h1>
+        <p class="sub">Powered by Google Gemini · 一键生成各类商业文案</p>
+    </header>
+
+    <div class="credits-bar">
+        🪙 剩余次数：<span class="num" id="creditsLeft">3</span>
+        <button class="btn-sm" onclick="toggleApiSetup()">🔑 设置 API Key</button>
+    </div>
+
+    <div class="api-setup" id="apiSetup" style="display:none">
+        <p>输入你的 Gemini API Key（<a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent)">点此免费获取</a>）</p>
+        <input type="password" id="apiKeyInput" placeholder="AIza...">
+        <button class="btn-sm" onclick="saveApiKey()">💾 保存</button>
+        <p style="font-size:11px;color:var(--text2);margin-top:4px">密钥只保存在你的浏览器本地</p>
+    </div>
+
+    <div>
+        <h3 style="font-size:14px;margin-bottom:10px;letter-spacing:2px">📋 选择文案类型</h3>
+        <div class="template-grid" id="templateGrid"></div>
+    </div>
+
+    <div class="form-area">
+        <label>📝 描述你的需求</label>
+        <textarea id="briefInput" placeholder="比如：一款新上市的有机洗发水，主打温和不伤发，适合敏感头皮，要突出天然成分和清爽体验..."></textarea>
+        <div class="row-2">
+            <div><label style="font-size:12px">🎯 目标受众</label><input id="audienceInput" placeholder="如：25-35岁女性 / 创业者 / 学生"></div>
+            <div><label style="font-size:12px">🎨 风格偏好</label><input id="toneInput" placeholder="如：温暖治愈 / 专业严谨 / 活泼有趣"></div>
+        </div>
+        <div id="statusMsg" class="status-msg"></div>
+        <button class="btn-generate" id="btnGenerate" onclick="generate()">⚡ 一键生成文案</button>
+    </div>
+
+    <div class="result-card" id="resultCard">
+        <div class="res-header"><span class="h">✨ 生成结果</span><span id="wordCount" style="font-size:12px;color:var(--text2)"></span></div>
+        <div class="res-body" id="resultBody"></div>
+        <div class="res-actions">
+            <button class="btn-copy" onclick="copyResult()">📋 复制全文</button>
+            <button class="btn-copy" onclick="regenerate()">🔄 重新生成</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const TEMPLATES = [
+    {id:'xiaohongshu',icon:'📕',label:'小红书文案',hint:'种草笔记·探店·好物分享'},
+    {id:'product',icon:'🛍️',label:'商品描述',hint:'电商详情页·卖点提炼'},
+    {id:'ad',icon:'📢',label:'广告语',hint:'Slogan·品牌口号·海报文案'},
+    {id:'script',icon:'🎬',label:'短视频脚本',hint:'抖音·口播·分镜脚本'},
+    {id:'article',icon:'📰',label:'公众号文章',hint:'深度内容·品牌故事'},
+    {id:'email',icon:'📧',label:'营销邮件',hint:'促销通知·客户维护'},
+    {id:'resume',icon:'📄',label:'简历优化',hint:'自我评价·经历包装'},
+    {id:'seo',icon:'🔍',label:'SEO 文案',hint:'关键词优化·网站文案'},
+];
+let currentTpl = 'xiaohongshu';
+
+const PROMPTS = {
+    xiaohongshu:`你是一个顶级的小红书文案专家。请根据以下信息撰写一篇小红书种草文案：
+- 产品/主题：{brief}
+- 目标受众：{audience}
+- 风格：{tone}
+要求：
+1. 标题要吸睛，用emoji点缀
+2. 正文分段落，语气自然亲切像朋友分享
+3. 结尾加上3-5个相关标签
+4. 控制在300-500字
+5. 不要出现「作为AI」之类的机器人口吻`,
+    product:`你是一个资深电商文案策划。请根据以下信息撰写商品详情页文案：
+- 产品：{brief}
+- 目标受众：{audience}
+- 风格：{tone}
+要求：
+1. 包含产品标题、核心卖点（3-5条）、使用场景描述
+2. 语言要有感染力，激发购买欲
+3. 突出差异化优势
+4. 控制在400-600字`,
+    ad:`你是一个获得过戛纳广告奖的创意总监。请根据以下信息创作广告语：
+- 品牌/产品：{brief}
+- 目标受众：{audience}
+- 风格：{tone}
+要求：
+1. 生成5条不同角度的广告语/Slogan
+2. 每条附一句话解释创意来源
+3. 包含至少1条情感向、1条功能向、1条反差向`,
+    script:`你是一个抖音百万粉丝账号的编导。请根据以下信息撰写短视频脚本：
+- 主题：{brief}
+- 目标受众：{audience}
+- 风格：{tone}
+要求：
+1. 包含分镜描述（画面+台词+时长）
+2. 前3秒要有钩子抓住注意力
+3. 总时长控制在30-60秒
+4. 结尾设置互动引导`,
+    article:`你是一个资深公众号主编。请根据以下信息撰写公众号文章：
+- 主题：{brief}
+- 目标受众：{audience}
+- 风格：{tone}
+要求：
+1. 标题要有吸引力（提供3个备选标题）
+2. 正文结构完整（引言-正文-结尾）
+3. 适当使用小标题分隔
+4. 字数800-1200字`,
+    email:`你是一个CRM营销专家。请根据以下信息撰写营销邮件：
+- 产品/活动：{brief}
+- 目标受众：{audience}
+- 风格：{tone}
+要求：
+1. 邮件主题行要吸引打开
+2. 正文结构：问候-价值点-CTA-签名
+3. 语气因人而异，不要太推销味
+4. 控制在200-300字`,
+    resume:`你是一个资深HR和职业顾问。请根据以下信息优化简历内容：
+- 求职者背景：{brief}
+- 目标岗位/行业：{audience}
+- 风格：{tone}
+要求：
+1. 生成优化后的自我评价（100-150字）
+2. 提炼3-5条核心竞争力
+3. 语言专业有力，用数据说话`,
+    seo:`你是一个SEO专家。请根据以下信息撰写SEO优化文案：
+- 网站/产品：{brief}
+- 目标关键词：{audience}
+- 风格：{tone}
+要求：
+1. 生成优化后的Title（30字内）和Meta Description（80字内）
+2. 撰写一段适合首页的SEO文案（200字）
+3. 自然融入关键词，不要堆砌`,
+};
+
+function init(){
+    document.getElementById('templateGrid').innerHTML = TEMPLATES.map(t=>`
+        <div class="tpl-card${t.id===currentTpl?' active':''}" onclick="selectTpl('${t.id}')">
+            <div class="icon">${t.icon}</div>
+            <div class="lbl">${t.label}</div>
+            <div class="hint">${t.hint}</div>
+        </div>
+    `).join('');
+    updateCredits();
+}
+function selectTpl(id){currentTpl=id;init()}
+function updateCredits(){
+    const c=parseInt(localStorage.getItem('writerCredits')||'3');
+    document.getElementById('creditsLeft').textContent=c;
+    document.getElementById('btnGenerate').disabled = c<=0;
+}
+
+function toggleApiSetup(){
+    const el=document.getElementById('apiSetup');
+    el.style.display=el.style.display==='none'?'block':'none';
+}
+function saveApiKey(){
+    const key=document.getElementById('apiKeyInput').value.trim();
+    if(!key){alert('请粘贴你的 Gemini API Key');return}
+    localStorage.setItem('geminiApiKey',key);
+    document.getElementById('apiSetup').style.display='none';
+    showStatus('✅ API Key 已保存！','success');
+}
+function getApiKey(){
+    return localStorage.getItem('geminiApiKey')||'';
+}
+
+async function generate(){
+    const apiKey=getApiKey();
+    if(!apiKey){document.getElementById('apiSetup').style.display='block';showStatus('⚠️ 请先设置 Gemini API Key（免费获取）','error');return}
+
+    const brief=document.getElementById('briefInput').value.trim();
+    if(!brief){showStatus('请填写需求描述','error');return}
+
+    let credits=parseInt(localStorage.getItem('writerCredits')||'3');
+    if(credits<=0){showStatus('🪙 免费次数已用完，请购买更多次数','error');return}
+
+    const audience=document.getElementById('audienceInput').value.trim()||'未指定';
+    const tone=document.getElementById('toneInput').value.trim()||'未指定';
+    const tpl=TEMPLATES.find(t=>t.id===currentTpl);
+    const prompt=PROMPTS[currentTpl].replace('{brief}',brief).replace('{audience}',audience).replace('{tone}',tone);
+
+    document.getElementById('btnGenerate').disabled=true;
+    document.getElementById('btnGenerate').textContent='⏳ Gemini 正在创作中...';
+    document.getElementById('statusMsg').className='status-msg';
+    document.getElementById('statusMsg').textContent='';
+
+    try{
+        const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+        });
+        if(!resp.ok){
+            const err=await resp.json().catch(()=>({}));
+            throw new Error(err.error?.message||`请求失败(${resp.status})`);
+        }
+        const data=await resp.json();
+        const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'(Gemini 返回为空，请重试)';
+
+        document.getElementById('resultBody').textContent=text;
+        document.getElementById('resultCard').classList.add('show');
+        document.getElementById('wordCount').textContent='约 '+text.length+' 字';
+        document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
+
+        // Deduct credit
+        credits--;
+        localStorage.setItem('writerCredits',credits);
+        updateCredits();
+        showStatus('✅ 生成成功！剩余 '+credits+' 次','success');
+    }catch(e){
+        showStatus('❌ '+e.message,'error');
+    }finally{
+        document.getElementById('btnGenerate').disabled=credits<=0;
+        document.getElementById('btnGenerate').textContent='⚡ 一键生成文案';
+    }
+}
+
+function copyResult(){
+    const text=document.getElementById('resultBody').textContent;
+    navigator.clipboard.writeText(text).then(()=>showStatus('📋 已复制到剪贴板','success'));
+}
+
+function regenerate(){generate()}
+
+function showStatus(msg,type){
+    const el=document.getElementById('statusMsg');
+    el.textContent=msg;
+    el.className='status-msg '+type;
+    setTimeout(()=>{el.className='status-msg';el.textContent=''},5000);
+}
+
+init();
+if(getApiKey())document.getElementById('apiKeyInput').value=getApiKey();
+</script>
+</body>
+</html>

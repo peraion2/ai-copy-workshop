@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 文案工坊 — 3秒出稿，一字千金</title>
+    <style>
+        :root{--bg:#050510;--card:rgba(255,255,255,0.03);--accent:#8b5cf6;--gold:#f59e0b;--text:#e0e0f0}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+        .hero{
+            text-align:center;padding:80px 20px 60px;
+            background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,0.15),transparent 60%);
+        }
+        .hero .badge{display:inline-block;padding:6px 18px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:30px;font-size:12px;color:var(--accent);letter-spacing:2px;margin-bottom:20px}
+        .hero h1{font-size:clamp(32px,6vw,56px);font-weight:900;letter-spacing:-1px;line-height:1.15}
+        .hero h1 span{background:linear-gradient(135deg,#c4b5fd,#8b5cf6,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero .punch{font-size:18px;color:rgba(255,255,255,0.5);margin:16px 0 32px}
+        .hero .cta-btn{
+            display:inline-block;padding:16px 40px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);
+            color:white;font-size:18px;font-weight:700;border-radius:50px;text-decoration:none;
+            letter-spacing:2px;box-shadow:0 0 40px rgba(139,92,246,0.4);transition:all 0.3s;
+        }
+        .hero .cta-btn:hover{transform:scale(1.05);box-shadow:0 0 60px rgba(139,92,246,0.6)}
+        .section{max-width:1000px;margin:0 auto;padding:60px 24px}
+        .section h2{text-align:center;font-size:28px;font-weight:900;margin-bottom:40px;letter-spacing:2px}
+        .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+        .feat{
+            background:var(--card);border:1px solid rgba(255,255,255,0.05);border-radius:16px;
+            padding:28px;text-align:center;transition:all 0.3s;
+        }
+        .feat:hover{border-color:rgba(139,92,246,0.3);transform:translateY(-3px)}
+        .feat .icon{font-size:40px;margin-bottom:12px}
+        .feat h3{font-size:18px;margin-bottom:6px}
+        .feat p{font-size:13px;color:rgba(255,255,255,0.5)}
+        .pricing{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+        .plan{
+            background:var(--card);border:1px solid rgba(255,255,255,0.06);border-radius:18px;
+            padding:32px 24px;width:280px;text-align:center;transition:all 0.3s;
+        }
+        .plan:hover{border-color:var(--accent);transform:translateY(-4px)}
+        .plan.popular{border-color:var(--accent);background:rgba(139,92,246,0.06)}
+        .plan .name{font-size:16px;font-weight:700;margin-bottom:4px}
+        .plan .price{font-size:36px;font-weight:900;color:var(--gold);margin:12px 0}
+        .plan .price sub{font-size:14px;color:rgba(255,255,255,0.4)}
+        .plan .feats{list-style:none;font-size:13px;color:rgba(255,255,255,0.6);margin:16px 0}
+        .plan .feats li{padding:4px 0}
+        .plan .btn-buy{
+            display:block;padding:12px;background:var(--accent);color:white;border:none;
+            border-radius:25px;font-weight:700;cursor:pointer;font-size:15px;transition:all 0.2s;text-decoration:none;
+        }
+        .plan .btn-buy:hover{background:#7c3aed}
+        .testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+        .testi{
+            background:var(--card);border:1px solid rgba(255,255,255,0.04);border-radius:14px;padding:20px;
+        }
+        .testi .words{font-size:14px;color:rgba(255,255,255,0.7);font-style:italic;margin-bottom:8px}
+        .testi .who{font-size:12px;color:var(--accent)}
+        .cta-section{text-align:center;padding:60px 20px;background:radial-gradient(ellipse at 50% 100%,rgba(139,92,246,0.1),transparent 60%)}
+        .cta-section .big{font-size:28px;font-weight:900;margin-bottom:12px}
+        footer{text-align:center;padding:30px;font-size:12px;color:rgba(255,255,255,0.2)}
+    </style>
+</head>
+<body>
+
+<section class="hero">
+    <div class="badge">🔥 AI 驱动 · 秒级出稿</div>
+    <h1>你的<span>AI 文案助手</span><br>3 秒写出爆款内容</h1>
+    <p class="punch">小红书 · 商品描述 · 广告语 · 短视频脚本 · 公众号 · 邮件 · 简历 · SEO<br>八大场景，一键成文，告别熬夜憋稿</p>
+    <a href="gemini-writer.html" class="cta-btn">🚀 免费试用 3 次</a>
+</section>
+
+<div class="section">
+    <h2>✨ 为什么选 AI 文案工坊</h2>
+    <div class="features">
+        <div class="feat"><div class="icon">⚡</div><h3>秒级生成</h3><p>输入需求，3 秒拿到成品文案，再也不对着空白文档发愁</p></div>
+        <div class="feat"><div class="icon">🧠</div><h3>Gemini 大脑</h3><p>Google 顶级 AI 模型驱动，文案质量有保障，不是套模板</p></div>
+        <div class="feat"><div class="icon">🎯</div><h3>8 大场景</h3><p>小红书、电商、广告、短视频…一个工具全搞定，不用来回切换</p></div>
+        <div class="feat"><div class="icon">💬</div><h3>真人语感</h3><p>不机器、不生硬，像专业文案人写的一样自然流畅</p></div>
+        <div class="feat"><div class="icon">🔒</div><h3>隐私安全</h3><p>你的 API Key 只存在本地浏览器，数据不上传第三方</p></div>
+        <div class="feat"><div class="icon">💰</div><h3>超低成本</h3><p>一杯奶茶钱写一个月文案，比雇人便宜 100 倍</p></div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>💳 简单定价</h2>
+    <div class="pricing">
+        <div class="plan">
+            <div class="name">🎁 试用</div>
+            <div class="price">¥0</div>
+            <ul class="feats"><li>3 次免费生成</li><li>全部模板可用</li><li>无需绑定支付</li></ul>
+            <a href="gemini-writer.html" class="btn-buy">开始试用</a>
+        </div>
+        <div class="plan popular">
+            <div class="name">⚡ 月度</div>
+            <div class="price">¥29<sub>/月</sub></div>
+            <ul class="feats"><li>100 次生成/月</li><li>全部模板</li><li>优先新功能</li><li>邮件支持</li></ul>
+            <a href="gemini-writer.html" class="btn-buy">立即订阅</a>
+        </div>
+        <div class="plan">
+            <div class="name">💎 年度</div>
+            <div class="price">¥199<sub>/年</sub></div>
+            <ul class="feats"><li>无限次生成</li><li>全部模板</li><li>专属模板定制</li><li>一对一指导</li></ul>
+            <a href="gemini-writer.html" class="btn-buy">立即订阅</a>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>💬 用户怎么说</h2>
+    <div class="testimonials">
+        <div class="testi"><p class="words">"以前写一篇小红书要憋 2 个小时，现在 3 分钟搞定，而且质量比我写的好多了。"</p><div class="who">— 电商店主 · 李女士</div></div>
+        <div class="testi"><p class="words">"帮我优化了简历，投了 5 家收到 4 个面试邀请。这 50 块花得太值了。"</p><div class="who">— 应届毕业生 · 小王</div></div>
+        <div class="testi"><p class="words">"公众号周更压力太大了，现在用这个工具生成初稿再改，效率翻了 3 倍。"</p><div class="who">— 自媒体人 · 陈小姐</div></div>
+    </div>
+</div>
+
+<div class="cta-section">
+    <div class="big">别再熬夜写文案了 ⏰</div>
+    <p style="color:rgba(255,255,255,0.5);margin-bottom:24px">免费试用 3 次，不满意不花钱</p>
+    <a href="gemini-writer.html" class="cta-btn">🚀 免费试用</a>
+</div>
+
+<footer>AI 文案工坊 · Powered by Google Gemini · Made with ❤️</footer>
+</body>
+</html>
